@@ -15,7 +15,7 @@ body {
   display: inline-block;
 }
 .my-grid {}
-.hit-grid {}
+.tracking-grid {}
 
 .squares {
   margin-bottom: -3px;;
@@ -26,4 +26,4 @@ body {
   display: inline-block;
 }
 .my-squares {}
-.hit-squares {}
+.tracking-squares {}
