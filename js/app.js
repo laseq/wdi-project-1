@@ -25,7 +25,7 @@ $(()=>{
   $trackingSquareList.addClass('squares tracking-squares');
 
   // Create a ship constructor
-  function ship(unit){
+  function ship(unit,player){
     this.unit = unit;
     switch (unit) {
       case 'carrier':
@@ -46,22 +46,23 @@ $(()=>{
     }
     this.location = [];
     this.hitLocation = [];
+    this.player = player;
   }
 
   const myShips = [];
   const enemyShips = [];
 
   function createShips(){
-    myShips[0] = new ship('carrier');
-    myShips[1] = new ship('battleship');
-    myShips[2] = new ship('cruiser');
-    myShips[3] = new ship('submarine');
-    myShips[4] = new ship('destroyer');
-    enemyShips[0] = new ship('carrier');
-    enemyShips[1] = new ship('battleship');
-    enemyShips[2] = new ship('cruiser');
-    enemyShips[3] = new ship('submarine');
-    enemyShips[4] = new ship('destroyer');
+    myShips[0] = new ship('carrier','human');
+    myShips[1] = new ship('battleship','human');
+    myShips[2] = new ship('cruiser','human');
+    myShips[3] = new ship('submarine','human');
+    myShips[4] = new ship('destroyer','human');
+    enemyShips[0] = new ship('carrier','computer');
+    enemyShips[1] = new ship('battleship','computer');
+    enemyShips[2] = new ship('cruiser','computer');
+    enemyShips[3] = new ship('submarine','computer');
+    enemyShips[4] = new ship('destroyer','computer');
   }
 
   // Object to store direction feasibility
@@ -72,9 +73,9 @@ $(()=>{
     this.east = false;
   }
 
-  function placeShipsOnGrid(){
+  function placeShipsOnGrid(fleet){
     // We're cycling through each ship from carrier to destroyer here
-    for (let i=0; i<myShips.length; i++){
+    for (let i=0; i<fleet.length; i++){
       const proposedLocations = [];
       let overlapBoolean;
       // Select a random proposed spot to start placing a ship
@@ -84,8 +85,8 @@ $(()=>{
       // The following if statements can be read as:
       // If this ship's size is less than or equal to the max size allowed in that orientation
       // Check if ship can be oriented upwards
-      if (myShips[i].size <= Math.floor((randomSpot/gridWidth)+1)){
-        proposedLocations.push(computeNorthAlignment(randomSpot,myShips[i].size));
+      if (fleet[i].size <= Math.floor((randomSpot/gridWidth)+1)){
+        proposedLocations.push(computeNorthAlignment(randomSpot,fleet[i].size));
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
@@ -98,8 +99,8 @@ $(()=>{
         directionFeasibility.north = false;
       }
       // Check if ship can be oriented rightwards
-      if (myShips[i].size <= gridWidth-(randomSpot%gridWidth)){
-        proposedLocations.push(computeEastAlignment(randomSpot,myShips[i].size));
+      if (fleet[i].size <= gridWidth-(randomSpot%gridWidth)){
+        proposedLocations.push(computeEastAlignment(randomSpot,fleet[i].size));
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
@@ -112,8 +113,8 @@ $(()=>{
         directionFeasibility.east = false;
       }
       // Check if ship can be oriented downwards
-      if (myShips[i].size <= gridWidth-Math.floor(randomSpot/gridWidth)){
-        proposedLocations.push(computeSouthAlignment(randomSpot,myShips[i].size));
+      if (fleet[i].size <= gridWidth-Math.floor(randomSpot/gridWidth)){
+        proposedLocations.push(computeSouthAlignment(randomSpot,fleet[i].size));
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
@@ -126,8 +127,8 @@ $(()=>{
         directionFeasibility.south = false;
       }
       // Check if ship can be oriented leftwards
-      if (myShips[i].size <= (randomSpot%gridWidth) +1){
-        proposedLocations.push(computeWestAlignment(randomSpot,myShips[i].size));
+      if (fleet[i].size <= (randomSpot%gridWidth) +1){
+        proposedLocations.push(computeWestAlignment(randomSpot,fleet[i].size));
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
@@ -145,9 +146,12 @@ $(()=>{
       // Else, decrement i so that the ship can get a new random spot
       // when it goes through the for loop again
       if (proposedLocations.length > 0){
-        myShips[i].location = setShipOrientation(proposedLocations);
-        console.log(myShips[i].unit+' location:', myShips[i].location);
-        drawShipOnGrid(myShips[i].location);
+        fleet[i].location = setShipOrientation(proposedLocations);
+        console.log(fleet[i].unit+' location:', fleet[i].location);
+        // We only draw the ships for the human player and not the computer
+        if (fleet[0].player === 'human'){
+          drawShipOnGrid(fleet[i].location);
+        }
         for (let i=0; i<proposedLocations.length; i++){
           proposedLocations.pop();
         }
@@ -156,7 +160,6 @@ $(()=>{
         console.log('i:', i);
         i--;
       }
-
     } //End of for loop that cycles through ships
 
 
@@ -239,7 +242,8 @@ $(()=>{
   }
 
   createShips();
-  placeShipsOnGrid();
+  placeShipsOnGrid(myShips);
+  placeShipsOnGrid(enemyShips);
 
 
 });
