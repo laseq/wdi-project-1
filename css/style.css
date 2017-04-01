@@ -27,6 +27,13 @@ body {
 }
 .my-squares {}
 .tracking-squares {}
+.tracking-squares-hit {
+  background-color: red;
+}
+.tracking-squares-missed {
+  background-color: white;
+}
+
 .my-ships{
   background-color: grey;
 }

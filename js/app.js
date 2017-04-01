@@ -1,6 +1,15 @@
 $(()=>{
 
   const gridWidth = 10;
+  const playerGuesses = {
+    all: [],
+    hits: []
+  };
+  const computerGuesses = {
+    all: [],
+    hits: []
+  };
+  const hitsToWin = 17;
 
   // Put 2 ul's in body to be the player's grid and the player's tracking grid
   $('body').append('<ul>');
@@ -70,14 +79,15 @@ $(()=>{
       let overlapBoolean; // Used for checking whether ships overlap each other
       // Select a random proposed spot to start placing a ship
       const randomSpot = Math.floor(Math.random()*Math.pow(gridWidth,2));
-      console.log('randomSpot:',randomSpot);
+      // console.log('randomSpot:',randomSpot);
+
       // Check to see which orientations are feasible
       // The following if statements can be read as:
       // If this ship's size is less than or equal to the max size allowed in that orientation
       // Check if ship can be oriented upwards
       if (fleet[i].size <= Math.floor((randomSpot/gridWidth)+1)){
         proposedLocations.push(computeNorthAlignment(randomSpot,fleet[i].size));
-        overlapBoolean = shipOverlaps(proposedLocations,i);
+        overlapBoolean = shipOverlaps(proposedLocations,i,fleet);
         if (overlapBoolean){
           proposedLocations.pop();
         }
@@ -85,7 +95,7 @@ $(()=>{
       // Check if ship can be oriented rightwards
       if (fleet[i].size <= gridWidth-(randomSpot%gridWidth)){
         proposedLocations.push(computeEastAlignment(randomSpot,fleet[i].size));
-        overlapBoolean = shipOverlaps(proposedLocations,i);
+        overlapBoolean = shipOverlaps(proposedLocations,i,fleet);
         if (overlapBoolean){
           proposedLocations.pop();
         }
@@ -93,7 +103,7 @@ $(()=>{
       // Check if ship can be oriented downwards
       if (fleet[i].size <= gridWidth-Math.floor(randomSpot/gridWidth)){
         proposedLocations.push(computeSouthAlignment(randomSpot,fleet[i].size));
-        overlapBoolean = shipOverlaps(proposedLocations,i);
+        overlapBoolean = shipOverlaps(proposedLocations,i,fleet);
         if (overlapBoolean){
           proposedLocations.pop();
         }
@@ -101,7 +111,7 @@ $(()=>{
       // Check if ship can be oriented leftwards
       if (fleet[i].size <= (randomSpot%gridWidth) +1){
         proposedLocations.push(computeWestAlignment(randomSpot,fleet[i].size));
-        overlapBoolean = shipOverlaps(proposedLocations,i);
+        overlapBoolean = shipOverlaps(proposedLocations,i,fleet);
         if (overlapBoolean){
           proposedLocations.pop();
         }
@@ -127,13 +137,10 @@ $(()=>{
         i--;
       }
     } //End of for loop that cycles through ships
+    // End of game setup
 
 
-
-
-
-
-
+    //**********FUNCTIONS BELOW HERE**********
 
     // Check to see if we can place the ship upwards
     function computeNorthAlignment(origin,size){
@@ -171,10 +178,10 @@ $(()=>{
     }
 
     // Make sure ships don't overlap
-    function shipOverlaps(proposedLocationsArray,shipIndex){
+    function shipOverlaps(proposedLocationsArray,shipIndex,fleet){
       let result = false;
       for (let i=0; i<shipIndex; i++){
-        const shipLocation = myShips[i].location;
+        const shipLocation = fleet[i].location;
         for (let j=0; j<shipLocation.length; j++){
           if (proposedLocationsArray[proposedLocationsArray.length-1].includes(shipLocation[j])){
             result = true;
@@ -197,8 +204,39 @@ $(()=>{
         $($mySquareList[shipLocation[i]]).addClass('my-ships');
       }
     }
+  } //End of function placeShipsOnGrid
 
+  // This is where the gameplay starts
+  // Click on the tracking grid to guess where the computer's ships are located
+
+  function checkHitsOnEnemy(){
+    console.log('Clicked '+ $(this).index());
+    const squareId = $(this).index();
+    if (playerGuesses.all.includes(squareId)){
+      console.log('You already guessed this square. Choose another square.');
+      return;
+    }
+    playerGuesses.all.push(squareId);
+    // Cycle through enemy ships to see if you've made a hit
+    for (let i=0;i<enemyShips.length;i++){
+      if (enemyShips[i].location.includes(squareId)){
+        console.log('You hit your enemy\'s ' + enemyShips[i].unit);
+        enemyShips[i].hitLocation.push(squareId);
+        playerGuesses.hits.push(squareId);
+        $(this).addClass('tracking-squares-hit');
+        if (enemyShips[i].size === enemyShips[i].hitLocation.length){
+          console.log('You sank your enemy\'s ' + enemyShips[i].unit);
+          if (playerGuesses.hits.length === hitsToWin){
+            console.log('Congratulations! You sank your enemy\'s fleet!');
+          }
+        }
+        return;
+      }
+    }
+    $(this).addClass('tracking-squares-missed');
+    console.log('You didn\'t hit any targets');
   }
+  $trackingSquareList.on('click', checkHitsOnEnemy);
 
   createShips();
   placeShipsOnGrid(myShips);
