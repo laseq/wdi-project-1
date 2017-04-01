@@ -37,3 +37,9 @@ body {
 .my-ships{
   background-color: grey;
 }
+.my-squares-hit {
+  background-color: red;
+}
+.my-squares-missed {
+  background-color: white;
+}
