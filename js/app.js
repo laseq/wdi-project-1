@@ -10,8 +10,6 @@ $(()=>{
   // Add classes to the two grids
   $('ul').first().addClass('grid my-grid');
   $('ul:nth-of-type(2)').addClass('grid tracking-grid');
-  // console.log($myGrid);
-  // console.log($trackingGrid);
   // Create the li elements for the two grids.
   // It's a 10x10 grid so 100 li elements(squares) for each grid
   for (let i=0; i<100; i++){
@@ -65,19 +63,11 @@ $(()=>{
     enemyShips[4] = new ship('destroyer','computer');
   }
 
-  // Object to store direction feasibility
-  function directionFeasibility() {
-    this.north = false;
-    this.west = false;
-    this.south = false;
-    this.east = false;
-  }
-
   function placeShipsOnGrid(fleet){
     // We're cycling through each ship from carrier to destroyer here
     for (let i=0; i<fleet.length; i++){
       const proposedLocations = [];
-      let overlapBoolean;
+      let overlapBoolean; // Used for checking whether ships overlap each other
       // Select a random proposed spot to start placing a ship
       const randomSpot = Math.floor(Math.random()*Math.pow(gridWidth,2));
       console.log('randomSpot:',randomSpot);
@@ -90,13 +80,7 @@ $(()=>{
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
-          directionFeasibility.north = false;
-        } else {
-          directionFeasibility.north = true;
         }
-        // console.log('shipoverlaps:',overlapBoolean);
-      } else {
-        directionFeasibility.north = false;
       }
       // Check if ship can be oriented rightwards
       if (fleet[i].size <= gridWidth-(randomSpot%gridWidth)){
@@ -104,13 +88,7 @@ $(()=>{
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
-          directionFeasibility.east = false;
-        } else {
-          directionFeasibility.east = true;
         }
-        // console.log('shipoverlaps:',overlapBoolean);
-      } else {
-        directionFeasibility.east = false;
       }
       // Check if ship can be oriented downwards
       if (fleet[i].size <= gridWidth-Math.floor(randomSpot/gridWidth)){
@@ -118,13 +96,7 @@ $(()=>{
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
-          directionFeasibility.south = false;
-        } else {
-          directionFeasibility.south = true;
         }
-        // console.log('shipoverlaps:',overlapBoolean);
-      } else {
-        directionFeasibility.south = false;
       }
       // Check if ship can be oriented leftwards
       if (fleet[i].size <= (randomSpot%gridWidth) +1){
@@ -132,13 +104,7 @@ $(()=>{
         overlapBoolean = shipOverlaps(proposedLocations,i);
         if (overlapBoolean){
           proposedLocations.pop();
-          directionFeasibility.west = false;
-        } else {
-          directionFeasibility.west = true;
         }
-        // console.log('shipoverlaps:',overlapBoolean);
-      } else {
-        directionFeasibility.west = false;
       }
 
       // If there are proposed locations for the ship to be put in,
@@ -164,60 +130,53 @@ $(()=>{
 
 
 
+
+
+
+
+
     // Check to see if we can place the ship upwards
     function computeNorthAlignment(origin,size){
       const array = [];
       for (let i=0; i<size; i++){
         array.push(origin-i*gridWidth);
       }
-      // console.log('North Alignment:', array);
       return array;
     }
+    // Check to see if we can place the ship rightwards
     function computeEastAlignment(origin,size){
       const array = [];
       array.push(origin);
       for (let i=1; i<size; i++){
         array.push(origin+i);
       }
-      // console.log('East Alignment:', array);
       return array;
     }
+    // Check to see if we can place the ship downwards
     function computeSouthAlignment(origin,size){
       const array = [];
       for (let i=0; i<size; i++){
         array.push(origin+i*gridWidth);
       }
-      // console.log('South Alignment:', array);
       return array;
     }
+    // Check to see if we can place the ship leftwards
     function computeWestAlignment(origin,size){
       const array = [];
       array.push(origin);
       for (let i=1; i<size; i++){
         array.push(origin-i);
       }
-      // console.log('West Alignment:', array);
       return array;
     }
 
     // Make sure ships don't overlap
-    // We have myShips[i].location and the proposedLocations[i] to work with
     function shipOverlaps(proposedLocationsArray,shipIndex){
       let result = false;
       for (let i=0; i<shipIndex; i++){
-        // console.log('Entered function shipOverlaps');
-        // console.log('proposedLocationsArray: ', proposedLocationsArray);
-        // console.log('i:',i,'shipIndex:',shipIndex);
         const shipLocation = myShips[i].location;
-        // console.log('shipLocation', shipLocation);
-        // console.log('shipLocation.length:',shipLocation.length);
         for (let j=0; j<shipLocation.length; j++){
-          // console.log('j:',j);
-          // console.log('shipLocation.length',shipLocation.length);
           if (proposedLocationsArray[proposedLocationsArray.length-1].includes(shipLocation[j])){
-            // console.log('Ships are overlapping');
-            // console.log('shipLocation: ', shipLocation);
-            // console.log('proposedLocationsArray[proposedLocationsArray.length-1]: ', proposedLocationsArray[proposedLocationsArray.length-1]);
             result = true;
           }
         }
