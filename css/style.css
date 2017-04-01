@@ -1,3 +1,29 @@
-body {
-  background: green;
+* {
+  box-sizing: border-box;
 }
+
+body {
+  background: beige;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.grid {
+  width: 450px;
+  padding: 30px 0 0 30px;
+  border: 1px solid blue;
+  display: inline-block;
+}
+.my-grid {}
+.hit-grid {}
+
+.squares {
+  margin-bottom: -3px;;
+  background-color: green;
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  display: inline-block;
+}
+.my-squares {}
+.hit-squares {}
