@@ -113,6 +113,7 @@ $(()=>{
 
       myShips[i].location = setShipOrientation(proposedLocations);
       console.log(myShips[i].unit+' location:', myShips[i].location);
+      drawShipOnGrid(myShips[i].location);
 
       for (let i=0; i<proposedLocations.length; i++){
         proposedLocations.pop();
@@ -161,6 +162,13 @@ $(()=>{
     function setShipOrientation(proposedLocationsArray){
       const randomArraySlot = Math.floor(Math.random()*proposedLocationsArray.length);
       return proposedLocationsArray[randomArraySlot];
+    }
+
+    // Draw the ships on the player's grid
+    function drawShipOnGrid(shipLocation){
+      for (let i = 0; i < shipLocation.length; i++) {
+        $($mySquareList[shipLocation[i]]).addClass('my-ships');
+      }
     }
 
   }

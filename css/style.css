@@ -27,3 +27,6 @@ body {
 }
 .my-squares {}
 .tracking-squares {}
+.my-ships{
+  background-color: grey;
+}
