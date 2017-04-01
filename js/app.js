@@ -124,7 +124,7 @@ $(()=>{
       // when it goes through the for loop again
       if (proposedLocations.length > 0){
         fleet[i].location = setShipOrientation(proposedLocations);
-        console.log(fleet[i].unit+' location:', fleet[i].location);
+        // console.log(fleet[i].unit+' location:', fleet[i].location);
         // We only draw the ships for the human player and not the computer
         if (fleet[0].player === 'human'){
           drawShipOnGrid(fleet[i].location);
@@ -133,8 +133,8 @@ $(()=>{
           proposedLocations.pop();
         }
       } else {
-        console.log('No locations available. Going through the loop again');
-        console.log('i:', i);
+        // console.log('No locations available. Going through the loop again');
+        // console.log('i:', i);
         i--;
       }
     } //End of for loop that cycles through ships
@@ -210,40 +210,17 @@ $(()=>{
   // This is where the gameplay starts
   // Click on the tracking grid to guess where the computer's ships are located
   function checkHitsOnEnemy(){
-    console.log('Clicked '+ $(this).index());
+    //console.log('Clicked '+ $(this).index());
     const squareId = $(this).index();
-    let hitsThisTurn = 0;
     if (playerGuesses.all.includes(squareId)){
       console.log('You already guessed this square. Choose another square.');
       return;
     }
     playerGuesses.all.push(squareId);
     // Cycle through enemy ships to see if you've made a hit
-    for (let i=0;i<enemyShips.length;i++){
-      if (enemyShips[i].location.includes(squareId)){
-        console.log('You hit your enemy\'s ' + enemyShips[i].unit);
-        enemyShips[i].hitLocation.push(squareId);
-        playerGuesses.hits.push(squareId);
-        $(this).addClass('tracking-squares-hit');
-        if (enemyShips[i].size === enemyShips[i].hitLocation.length){
-          console.log('You sank your enemy\'s ' + enemyShips[i].unit);
-          if (playerGuesses.hits.length === hitsToWin){
-            console.log('Congratulations! You sank your enemy\'s fleet!');
-            $trackingSquareList.off('click', playerGuesses);
-          }
-        }
-        hitsThisTurn++;
-        break;
-      }
-    }
-    if (hitsThisTurn === 0){
-      $(this).addClass('tracking-squares-missed');
-      console.log('You didn\'t hit any targets');
-    }
-
+    checkHits(playerGuesses,enemyShips,squareId,this);
+    // The computer makes their move next
     computerTurn();
-
-
   }
   $trackingSquareList.on('click', checkHitsOnEnemy);
 
@@ -255,11 +232,13 @@ $(()=>{
       compGuess = Math.floor(Math.random()*Math.pow(gridWidth,2));
       console.log('compGuess:', compGuess);
       if (computerGuesses.all.includes(compGuess)){
+        console.log('Comp guessed a used square');
         guessingUsedSquares = true;
       } else {
         guessingUsedSquares = false;
       }
     } while (guessingUsedSquares);
+    computerGuesses.all.push(compGuess);
     const theSquareElement = $mySquareList[compGuess];
     checkHits(computerGuesses,myShips,compGuess,theSquareElement);
   }
@@ -269,7 +248,7 @@ $(()=>{
     // Cycle through enemy ships to see if you've made a hit
     for (let i=0;i<fleetToHit.length;i++){
       if (fleetToHit[i].location.includes(squareId)){
-        console.log('You hit '+ fleetToHit[0].player + '\'s ' + fleetToHit[i].unit);
+        console.log('The attacker hit '+ fleetToHit[0].player + '\'s ' + fleetToHit[i].unit);
         fleetToHit[i].hitLocation.push(squareId);
         attackerGuessObject.hits.push(squareId);
         if (fleetToHit[0].player === 'computer'){
@@ -292,7 +271,7 @@ $(()=>{
       }
     }
     if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
-      $(this).addClass('tracking-squares-missed');
+      $(theSquareElement).addClass('tracking-squares-missed');
       console.log('You didn\'t hit any targets');
     } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human'){
       $(theSquareElement).addClass('my-squares-missed');
@@ -303,20 +282,5 @@ $(()=>{
   createShips();
   placeShipsOnGrid(myShips);
   placeShipsOnGrid(enemyShips);
-
-  // While the winning condition isn't met, run the game
-  /*while (playerGuesses.hits.length < 17 || computerGuesses.hits.length <17){
-    // If the turn counter is an even number, it's the player's turn
-    // Else if the turn counter is an odd number, it's the computer's turn
-    if (turnCounter%2 === 0){
-      // Let the player click on a square on the tracking grid
-      turnCounter++;
-    } else {
-      // It's the computer's turn
-      checkHitsOnPlayer();
-      turnCounter++;
-    }
-  }*/
-
 
 });
