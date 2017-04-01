@@ -76,6 +76,7 @@ $(()=>{
     // We're cycling through each ship from carrier to destroyer here
     for (let i=0; i<myShips.length; i++){
       const proposedLocations = [];
+      let overlapBoolean;
       // Select a random proposed spot to start placing a ship
       const randomSpot = Math.floor(Math.random()*Math.pow(gridWidth,2));
       console.log('randomSpot:',randomSpot);
@@ -85,52 +86,56 @@ $(()=>{
       // Check if ship can be oriented upwards
       if (myShips[i].size <= Math.floor((randomSpot/gridWidth)+1)){
         proposedLocations.push(computeNorthAlignment(randomSpot,myShips[i].size));
-        if (shipOverlaps(proposedLocations,i)){
+        overlapBoolean = shipOverlaps(proposedLocations,i);
+        if (overlapBoolean){
           proposedLocations.pop();
           directionFeasibility.north = false;
         } else {
           directionFeasibility.north = true;
         }
-        console.log('shipoverlaps:',shipOverlaps(proposedLocations,i));
+        // console.log('shipoverlaps:',overlapBoolean);
       } else {
         directionFeasibility.north = false;
       }
       // Check if ship can be oriented rightwards
       if (myShips[i].size <= gridWidth-(randomSpot%gridWidth)){
         proposedLocations.push(computeEastAlignment(randomSpot,myShips[i].size));
-        if (shipOverlaps(proposedLocations,i)){
+        overlapBoolean = shipOverlaps(proposedLocations,i);
+        if (overlapBoolean){
           proposedLocations.pop();
           directionFeasibility.east = false;
         } else {
           directionFeasibility.east = true;
         }
-        console.log('shipoverlaps:',shipOverlaps(proposedLocations,i));
+        // console.log('shipoverlaps:',overlapBoolean);
       } else {
         directionFeasibility.east = false;
       }
       // Check if ship can be oriented downwards
       if (myShips[i].size <= gridWidth-Math.floor(randomSpot/gridWidth)){
         proposedLocations.push(computeSouthAlignment(randomSpot,myShips[i].size));
-        if (shipOverlaps(proposedLocations,i)){
+        overlapBoolean = shipOverlaps(proposedLocations,i);
+        if (overlapBoolean){
           proposedLocations.pop();
           directionFeasibility.south = false;
         } else {
           directionFeasibility.south = true;
         }
-        console.log('shipoverlaps:',shipOverlaps(proposedLocations,i));
+        // console.log('shipoverlaps:',overlapBoolean);
       } else {
         directionFeasibility.south = false;
       }
       // Check if ship can be oriented leftwards
       if (myShips[i].size <= (randomSpot%gridWidth) +1){
         proposedLocations.push(computeWestAlignment(randomSpot,myShips[i].size));
-        if (shipOverlaps(proposedLocations,i)){
+        overlapBoolean = shipOverlaps(proposedLocations,i);
+        if (overlapBoolean){
           proposedLocations.pop();
           directionFeasibility.west = false;
         } else {
           directionFeasibility.west = true;
         }
-        console.log('shipoverlaps:',shipOverlaps(proposedLocations,i));
+        // console.log('shipoverlaps:',overlapBoolean);
       } else {
         directionFeasibility.west = false;
       }
@@ -195,6 +200,7 @@ $(()=>{
     // Make sure ships don't overlap
     // We have myShips[i].location and the proposedLocations[i] to work with
     function shipOverlaps(proposedLocationsArray,shipIndex){
+      let result = false;
       for (let i=0; i<shipIndex; i++){
         // console.log('Entered function shipOverlaps');
         // console.log('proposedLocationsArray: ', proposedLocationsArray);
@@ -206,14 +212,14 @@ $(()=>{
           // console.log('j:',j);
           // console.log('shipLocation.length',shipLocation.length);
           if (proposedLocationsArray[proposedLocationsArray.length-1].includes(shipLocation[j])){
-            console.log('Ships are overlapping');
-            console.log('shipLocation: ', shipLocation);
-            console.log('proposedLocationsArray[proposedLocationsArray.length-1]: ', proposedLocationsArray[proposedLocationsArray.length-1]);
-            return true;
+            // console.log('Ships are overlapping');
+            // console.log('shipLocation: ', shipLocation);
+            // console.log('proposedLocationsArray[proposedLocationsArray.length-1]: ', proposedLocationsArray[proposedLocationsArray.length-1]);
+            result = true;
           }
         }
       }
-      return false;
+      return result;
     }
 
     // Randomly select a feasible orientation for the ship's location
