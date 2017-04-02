@@ -3,14 +3,14 @@
 }
 
 body {
-  background: beige;
+  background: #babfc6;
   margin: 0 auto;
   font-family: 'Orbitron', sans-serif;
 }
 
 header {
   margin: 0 auto;
-  padding: 30px 20px 20px;
+  padding: 20px 0 10px;
   text-align: center;
   background-color: grey;
 }
@@ -24,6 +24,21 @@ h1 {
 main {
   max-width: 960px;
   margin: 0 auto;
+  background-color: beige;
+  text-align: center;
+}
+.info-bar {
+  max-width: 88%;
+  background-color: #2c2d2d;
+  color: green;
+  padding: 8px 0;
+  display: block;
+  margin: 0 auto;
+  border: 2px solid black;
+}
+.player-column,
+.tracking-column {
+  display: inline-block;
 }
 
 .grid {
@@ -46,7 +61,11 @@ main {
 .my-squares {}
 .tracking-squares {}
 .tracking-squares:hover {
-  background-color: #76a8f7;
+  cursor: none;
+  background-image: url("../sea-warfare-set/crosshairs.png");
+  background-position:50% 50%;  /* Sets reference point to scale from */
+  background-size:cover;
+  /*background-color: #76a8f7;*/
 }
 .tracking-squares-hit {
   background-color: red;
@@ -78,7 +97,7 @@ footer {
 }
 .ship-images h2 {
   font-size: 20px;
-  padding: 10px 0 5px;
+  padding-top: 10px;
 }
 .ship-images img {
   max-width: 80%;
@@ -110,6 +129,5 @@ footer {
 .img-col-1-2 {
   display: inline-block;
   vertical-align: bottom;
-  padding: 2px 0;
   border-radius: 5px;
 }
