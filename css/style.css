@@ -130,4 +130,8 @@ footer {
   display: inline-block;
   vertical-align: bottom;
   border-radius: 5px;
+  position: relative;
+}
+.eliminated {
+  
 }

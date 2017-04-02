@@ -12,6 +12,7 @@ $(()=>{
     player: 'computer'
   };
   const hitsToWin = 17;
+  let gameOver = false;
   let turnCounter = 0;
 
   // Put 2 ul's in body to be the player's grid and the player's tracking grid
@@ -267,16 +268,30 @@ $(()=>{
         if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
           if (fleetToHit[0].player === 'computer'){
             $('.info-bar').text('You sank your enemy\'s ' + fleetToHit[i].unit +'!');
+            // Change the location of the sunken ship to the one with the red crosses
+            // to show that it has been eliminated
+            const imgIdString = '#enemy-'+fleetToHit[i].unit+'-img';
+            const imgLocationString = 'sea-warfare-set/eliminated/'+fleetToHit[i].unit+'-side.png';
+            $(imgIdString).attr('src',imgLocationString);
           } else {
             $('.info-bar').text('The enemy sank our ' + fleetToHit[i].unit + '!');
+            // Change the location of the sunken ship to the one with the red crosses
+            // to show that it has been eliminated
+            const imgIdString = '#player-'+fleetToHit[i].unit+'-img';
+            const imgLocationString = 'sea-warfare-set/eliminated/'+fleetToHit[i].unit+'-side.png';
+            $(imgIdString).attr('src',imgLocationString);
           }
           console.log('You sank '+ fleetToHit[0].player + '\'s ' + fleetToHit[i].unit);
           if (attackerGuessObject.hits.length === hitsToWin){
             if (attackerGuessObject.player === 'human'){
               $('.info-bar').text('Congratulations! You sank your enemy\'s fleet!');
+              console.log('Congratulations! You sank your enemy\'s fleet!');
               $trackingSquareList.off('click', checkHitsOnEnemy);
+              gameOver = true;
             } else {
               $('.info-bar').text('The enemy sank our fleet!');
+              $trackingSquareList.off('click', checkHitsOnEnemy);
+              gameOver = true;
             }
             console.log('Congratulations! You sank your enemy\'s fleet!');
             // if (fleetToHit[0].player === 'computer'){
@@ -292,7 +307,7 @@ $(()=>{
       // $(theSquareElement).removeClass('tracking-squares');
       $(theSquareElement).addClass('tracking-squares-missed');
       $('.info-bar').text('You didn\'t hit any targets');
-    } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human'){
+    } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human' && !gameOver){
       $(theSquareElement).addClass('my-squares-missed');
       $('.info-bar').text('The computer missed you');
       console.log('The computer missed you');
