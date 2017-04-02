@@ -27,7 +27,7 @@ main {
 }
 
 .grid {
-  width: 350px;
+  width: 420px;
   padding: 30px 0 0 30px;
   border: 1px solid blue;
   display: inline-block;
@@ -38,9 +38,9 @@ main {
 .squares {
   margin-bottom: -4px;;
   background-color: #3c82f2;
-  width: 30px;
-  height: 30px;
-  border: 1px solid black;
+  width: 37px;
+  height: 37px;
+  border: 1px solid #0c66f7;
   display: inline-block;
 }
 .my-squares {}
@@ -65,6 +65,51 @@ main {
   background-color: white;
 }
 
+footer {
+  margin: 30px auto;
+}
+
 .ship-images {
-  max-width: 640px;
+  max-width: 420px;
+  text-align: center;
+  border: 2px solid maroon;
+  border-radius: 5px;
+  text-transform: uppercase;
+}
+.ship-images h2 {
+  font-size: 20px;
+  padding: 10px 0 5px;
+}
+.ship-images img {
+  max-width: 80%;
+}
+.ship-images p {
+  font-size: 12px;
+}
+.img-col-1-1 {
+  width: 99.5%;
+}
+.img-col-1-1 img {
+  max-width: 60%;
+}
+.img-col-1-1 p {
+  display: inline-block;
+}
+.img-col-3-5 {
+  width: 59.4%;
+}
+.img-col-2-5 {
+  width: 39.5%;
+}
+.img-col-1-2 {
+  width: 49.4%;
+}
+.img-col-1-1,
+.img-col-3-5,
+.img-col-2-5,
+.img-col-1-2 {
+  display: inline-block;
+  vertical-align: bottom;
+  padding: 2px 0;
+  border-radius: 5px;
 }
