@@ -45,6 +45,9 @@ main {
 }
 .my-squares {}
 .tracking-squares {}
+.tracking-squares:hover {
+  background-color: #76a8f7;
+}
 .tracking-squares-hit {
   background-color: red;
 }
@@ -60,4 +63,8 @@ main {
 }
 .my-squares-missed {
   background-color: white;
+}
+
+.ship-images {
+  max-width: 640px;
 }

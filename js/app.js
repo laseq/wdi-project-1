@@ -252,6 +252,7 @@ $(()=>{
         fleetToHit[i].hitLocation.push(squareId);
         attackerGuessObject.hits.push(squareId);
         if (fleetToHit[0].player === 'computer'){
+          $(theSquareElement).removeClass('tracking-squares');
           $(theSquareElement).addClass('tracking-squares-hit');
         } else {
           $(theSquareElement).addClass('my-squares-hit');
@@ -271,6 +272,7 @@ $(()=>{
       }
     }
     if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
+      $(theSquareElement).removeClass('tracking-squares');
       $(theSquareElement).addClass('tracking-squares-missed');
       console.log('You didn\'t hit any targets');
     } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human'){
