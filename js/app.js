@@ -220,10 +220,13 @@ $(()=>{
       return;
     }
     playerGuesses.all.push(squareId);
+    // Turn player clicking off because it's the computer's turn
+    $trackingSquareList.off('click', checkHitsOnEnemy);
     // Cycle through enemy ships to see if you've made a hit
     checkHits(playerGuesses,enemyShips,squareId,this);
-    // The computer makes their move next
-    computerTurn();
+    // The computer makes their move next after a time lag
+    setTimeout(computerTurn, 2000);
+    // computerTurn();
   }
   $trackingSquareList.on('click', checkHitsOnEnemy);
 
@@ -244,6 +247,8 @@ $(()=>{
     computerGuesses.all.push(compGuess);
     const theSquareElement = $mySquareList[compGuess];
     checkHits(computerGuesses,myShips,compGuess,theSquareElement);
+    // Turn player clicking back on
+    $trackingSquareList.on('click', checkHitsOnEnemy);
   }
 
   function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){

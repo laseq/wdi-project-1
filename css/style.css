@@ -28,13 +28,14 @@ main {
   text-align: center;
 }
 .info-bar {
-  max-width: 88%;
-  background-color: #2c2d2d;
-  color: green;
-  padding: 8px 0;
-  display: block;
   margin: 0 auto;
+  padding: 8px 0;
+  max-width: 88%;
+  color: green;
+  font-weight: bold;
+  background-color: #2c2d2d;
   border: 2px solid black;
+  display: block;
 }
 .player-column,
 .tracking-column {
@@ -133,5 +134,5 @@ footer {
   position: relative;
 }
 .eliminated {
-  
+
 }
