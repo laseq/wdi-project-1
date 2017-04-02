@@ -4,12 +4,30 @@
 
 body {
   background: beige;
+  margin: 0 auto;
+  font-family: 'Orbitron', sans-serif;
+}
+
+header {
+  margin: 0 auto;
+  padding: 30px 20px 20px;
+  text-align: center;
+  background-color: grey;
+}
+
+h1 {
+  text-transform: uppercase;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+main {
   max-width: 960px;
   margin: 0 auto;
 }
 
 .grid {
-  width: 450px;
+  width: 350px;
   padding: 30px 0 0 30px;
   border: 1px solid blue;
   display: inline-block;
@@ -18,10 +36,10 @@ body {
 .tracking-grid {}
 
 .squares {
-  margin-bottom: -3px;;
+  margin-bottom: -4px;;
   background-color: #3c82f2;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border: 1px solid black;
   display: inline-block;
 }

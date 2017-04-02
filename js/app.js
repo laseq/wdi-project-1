@@ -13,8 +13,8 @@ $(()=>{
   let turnCounter = 0;
 
   // Put 2 ul's in body to be the player's grid and the player's tracking grid
-  $('body').append('<ul>');
-  $('body').append('<ul>');
+  $('main').append('<ul>');
+  $('main').append('<ul>');
   const $myGrid = $('ul')[0];
   const $trackingGrid = $('ul')[1];
   // Add classes to the two grids
