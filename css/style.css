@@ -105,7 +105,10 @@ main {
   background-color: #3c82f2;
   width: 37px;
   height: 37px;
+  /*Old border without water tiles*/
   border: 1px solid #0c66f7;
+  /*New border with water tiles:*/
+  border: 1px solid rgba(12, 102, 247, 0.6);
   display: inline-block;
 }
 .my-squares {}
@@ -118,15 +121,26 @@ main {
   /*background-color: #76a8f7;*/
 }
 .tracking-squares-hit {
-  background-color: red;
+  /*background-color: red;*/
+  background: radial-gradient(red 25%,#25627d 75%);
+}
+.tracking-squares-hit:hover {
+  background:
+    url("../sea-warfare-set/crosshairs.png"),
+    radial-gradient(red 25%,#25627d 75%);
+    background-position:50% 50%;  /* Sets reference point to scale from */
+    background-size:cover;
 }
 .tracking-squares-missed {
-  background: radial-gradient(#8ed2ff,#3c82f2);
+  /*New colours with the water tile:*/
+  background: radial-gradient(rgb(84, 151, 214),#24617c);
+  /*Old colours without the water tile:*/
+  /*background: radial-gradient(#8ed2ff,#3c82f2);*/
 }
 .tracking-squares-missed:hover {
   background:
     url("../sea-warfare-set/crosshairs.png"),
-    radial-gradient(#8ed2ff,#3c82f2);
+    radial-gradient(rgb(84, 151, 214),#24617c);
     background-position:50% 50%;  /* Sets reference point to scale from */
     background-size:cover;
 }
@@ -144,4 +158,28 @@ main {
 
 footer {
   margin: 30px auto;
+}
+.water {
+  width: 37px;
+  height: 37px;
+  background: url('../images/water.png');
+  z-index: -50;
+}
+.water:hover {
+  background:
+    url("../sea-warfare-set/crosshairs.png"),
+    url('../images/water.png'),
+    radial-gradient(#8ed2ff,#3c82f2);
+    background-position:50% 50%;  /* Sets reference point to scale from */
+    background-size:cover;
+}
+.water-animated {
+  width: 37px;
+  height: 37px;
+  background: url('../images/water.png') left center;
+  background-position: 0 0;
+  animation: play 2s steps(15) infinite;
+}
+@keyframes play {
+   100% { background-position: -480px; }
 }

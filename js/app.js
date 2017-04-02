@@ -33,7 +33,7 @@ $(()=>{
   const $mySquareList = $('.my-grid li');
   $mySquareList.addClass('squares my-squares');
   const $trackingSquareList = $('.tracking-grid li');
-  $trackingSquareList.addClass('squares tracking-squares');
+  $trackingSquareList.addClass('squares tracking-squares water');
 
   // Create a ship constructor
   function ship(unit,player){
@@ -266,10 +266,12 @@ $(()=>{
         if (fleetToHit[0].player === 'computer'){
           // $(theSquareElement).removeClass('tracking-squares');
           $(theSquareElement).addClass('tracking-squares-hit');
+          $(theSquareElement).removeClass('water');
         } else {
           $(theSquareElement).addClass('my-squares-hit');
         }
-
+        // Displaying further messages like 'sank ship', 'sank fleet',
+        // crossing out ship images etc
         if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
           if (fleetToHit[0].player === 'computer'){
             $('.info-bar').text('You sank your enemy\'s ' + fleetToHit[i].unit +'!');
@@ -311,6 +313,7 @@ $(()=>{
     if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
       // $(theSquareElement).removeClass('tracking-squares');
       $(theSquareElement).addClass('tracking-squares-missed');
+      $(theSquareElement).removeClass('water');
       $('.info-bar').text('You didn\'t hit any targets');
     } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human' && !gameOver){
       $(theSquareElement).addClass('my-squares-missed');
