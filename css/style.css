@@ -31,8 +31,9 @@ main {
   margin: 0 auto;
   padding: 8px 0;
   max-width: 88%;
-  color: green;
+  font-size: 20px;
   font-weight: bold;
+  color: #03a30b;
   background-color: #2c2d2d;
   border: 2px solid black;
   display: block;
@@ -42,53 +43,7 @@ main {
   display: inline-block;
 }
 
-.grid {
-  width: 420px;
-  padding: 30px 0 0 30px;
-  border: 1px solid blue;
-  display: inline-block;
-}
-.my-grid {}
-.tracking-grid {}
-
-.squares {
-  margin-bottom: -4px;;
-  background-color: #3c82f2;
-  width: 37px;
-  height: 37px;
-  border: 1px solid #0c66f7;
-  display: inline-block;
-}
-.my-squares {}
-.tracking-squares {}
-.tracking-squares:hover {
-  cursor: none;
-  background-image: url("../sea-warfare-set/crosshairs.png");
-  background-position:50% 50%;  /* Sets reference point to scale from */
-  background-size:cover;
-  /*background-color: #76a8f7;*/
-}
-.tracking-squares-hit {
-  background-color: red;
-}
-.tracking-squares-missed {
-  background-color: white;
-}
-
-.my-ships{
-  background-color: grey;
-}
-.my-squares-hit {
-  background-color: red;
-}
-.my-squares-missed {
-  background-color: white;
-}
-
-footer {
-  margin: 30px auto;
-}
-
+/*CSS for the ship image boxes:*/
 .ship-images {
   max-width: 420px;
   text-align: center;
@@ -133,6 +88,60 @@ footer {
   border-radius: 5px;
   position: relative;
 }
-.eliminated {
+/*End of CSS for the ship image boxes:*/
 
+/*CSS for the grids:*/
+.grid {
+  width: 420px;
+  padding: 30px 0 0 30px;
+  border: 1px solid blue;
+  display: inline-block;
+}
+.my-grid {}
+.tracking-grid {}
+
+.squares {
+  margin-bottom: -4px;;
+  background-color: #3c82f2;
+  width: 37px;
+  height: 37px;
+  border: 1px solid #0c66f7;
+  display: inline-block;
+}
+.my-squares {}
+.tracking-squares {}
+.tracking-squares:hover {
+  cursor: none;
+  background-image: url("../sea-warfare-set/crosshairs.png");
+  background-position:50% 50%;  /* Sets reference point to scale from */
+  background-size:cover;
+  /*background-color: #76a8f7;*/
+}
+.tracking-squares-hit {
+  background-color: red;
+}
+.tracking-squares-missed {
+  background: radial-gradient(#8ed2ff,#3c82f2);
+}
+.tracking-squares-missed:hover {
+  background:
+    url("../sea-warfare-set/crosshairs.png"),
+    radial-gradient(#8ed2ff,#3c82f2);
+    background-position:50% 50%;  /* Sets reference point to scale from */
+    background-size:cover;
+}
+
+.my-ships{
+  background-color: grey;
+}
+.my-squares-hit {
+  background-color: red;
+}
+.my-squares-missed {
+  background: radial-gradient(#8ed2ff,#3c82f2);
+}
+/*End of CSS for the grids:*/
+
+footer {
+  margin: 30px auto;
 }
