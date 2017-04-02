@@ -149,10 +149,14 @@ main {
   background-color: grey;
 }
 .my-squares-hit {
-  background-color: red;
+  /*background-color: red;*/
+  background: radial-gradient(red 25%,grey 75%);
 }
 .my-squares-missed {
-  background: radial-gradient(#8ed2ff,#3c82f2);
+  /*New colours with the water tile:*/
+  background: radial-gradient(rgb(84, 151, 214),#24617c);
+  /*Old colours without the water tile:*/
+  /*background: radial-gradient(#8ed2ff,#3c82f2);*/
 }
 /*End of CSS for the grids:*/
 
@@ -165,7 +169,7 @@ footer {
   background: url('../images/water.png');
   z-index: -50;
 }
-.water:hover {
+.tracking-column .water:hover {
   background:
     url("../sea-warfare-set/crosshairs.png"),
     url('../images/water.png'),

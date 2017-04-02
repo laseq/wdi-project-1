@@ -31,7 +31,7 @@ $(()=>{
   }
   // Add classes to the squares in each grid
   const $mySquareList = $('.my-grid li');
-  $mySquareList.addClass('squares my-squares');
+  $mySquareList.addClass('squares my-squares water');
   const $trackingSquareList = $('.tracking-grid li');
   $trackingSquareList.addClass('squares tracking-squares water');
 
@@ -205,6 +205,7 @@ $(()=>{
     // Draw the ships on the player's grid
     function drawShipOnGrid(shipLocation){
       for (let i = 0; i < shipLocation.length; i++) {
+        $($mySquareList[shipLocation[i]]).removeClass('water');
         $($mySquareList[shipLocation[i]]).addClass('my-ships');
       }
     }
@@ -317,6 +318,7 @@ $(()=>{
       $('.info-bar').text('You didn\'t hit any targets');
     } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human' && !gameOver){
       $(theSquareElement).addClass('my-squares-missed');
+      $(theSquareElement).removeClass('water');
       $('.info-bar').text('The computer missed you');
       console.log('The computer missed you');
     }
