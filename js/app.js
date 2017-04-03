@@ -16,14 +16,14 @@ $(()=>{
   let gameOver = false;
 
   // Create ul's and li's to become the x and y-axis labels for the grids
-  $('.player-column').append('<ul>'); // The x-axis number labels
-  $('.player-column').append('<ul>'); // The y-axis letter labels
-  $('.tracking-column').append('<ul>'); // The x-axis number labels
-  $('.tracking-column').append('<ul>'); // The y-axis letter labels
-  $('.player-column ul:nth-child(2)').addClass('grid-x-axis');
-  $('.player-column ul:nth-child(3)').addClass('grid-y-axis');
-  $('.tracking-column ul:nth-child(2)').addClass('grid-x-axis');
-  $('.tracking-column ul:nth-child(3)').addClass('grid-y-axis');
+  $('.player-column .grid-container').append('<ul>'); // The x-axis number labels
+  $('.player-column .grid-container').append('<ul>'); // The y-axis letter labels
+  $('.tracking-column .grid-container').append('<ul>'); // The x-axis number labels
+  $('.tracking-column .grid-container').append('<ul>'); // The y-axis letter labels
+  $('.player-column .grid-container ul:nth-child(1)').addClass('grid-x-axis');
+  $('.player-column .grid-container ul:nth-child(2)').addClass('grid-y-axis');
+  $('.tracking-column .grid-container ul:nth-child(1)').addClass('grid-x-axis');
+  $('.tracking-column .grid-container ul:nth-child(2)').addClass('grid-y-axis');
   // Create the li elements for these 4 ul elements
   for (let i = 0; i < 10; i++) {
     $('.player-column .grid-x-axis').append('<li>');
@@ -47,12 +47,12 @@ $(()=>{
   }
 
   // Put 2 ul's in their respective columns to be the player's ship grid and the player's tracking grid
-  $('.player-column').append('<ul>');
-  $('.tracking-column').append('<ul>');
+  $('.player-column .grid-container').append('<ul>');
+  $('.tracking-column .grid-container').append('<ul>');
   // Add classes to the two grids
   // $('ul').first().addClass('grid my-grid');
-  $('.player-column ul:nth-child(4)').addClass('grid my-grid');
-  $('.tracking-column ul:nth-child(4)').addClass('grid tracking-grid');
+  $('.player-column .grid-container ul:nth-child(3)').addClass('grid my-grid');
+  $('.tracking-column .grid-container ul:nth-child(3)').addClass('grid tracking-grid');
   // Create the li elements for the two grids.
   // It's a 10x10 grid so 100 li elements(squares) for each grid
   for (let i=0; i<100; i++){

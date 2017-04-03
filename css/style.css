@@ -91,10 +91,17 @@ main {
 }
 /*End of CSS for the ship image boxes:*/
 
+.grid-container {
+  font-weight: bold;
+}
+
 /*CSS for the grid labels*/
 .grid-x-axis {
-  padding-right: 7px;
+  margin-right: 7px;
+  margin-left: 6px;
   text-align: right;
+  color: #03a30b;
+  background-color: #2c2d2d;
   /*border: 1px solid green;*/
 }
 .grid-number-labels {
@@ -109,6 +116,8 @@ main {
   margin-right: -1px;
   display: inline-block;
   vertical-align: top;
+  color: #03a30b;
+  background-color: #2c2d2d;
   /*border: 1px solid green;*/
 }
 .grid-letter-labels {
@@ -198,12 +207,14 @@ footer {
   z-index: -50;
 }
 .tracking-column .water:hover {
+  border: 2px solid #3c82f2;
+  box-shadow: inset 0 0 5px #3c82f2;
   background:
     url("../sea-warfare-set/crosshairs.png"),
     url('../images/water.png'),
     radial-gradient(#8ed2ff,#3c82f2);
-    background-position:50% 50%;  /* Sets reference point to scale from */
-    background-size:cover;
+  background-position: 50% 50%;  /* Sets reference point to scale from */
+  background-size:cover;
 }
 .water-animated {
   width: 37px;
