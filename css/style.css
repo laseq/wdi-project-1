@@ -91,19 +91,25 @@ main {
 }
 /*End of CSS for the ship image boxes:*/
 
+/*CSS for the grid labels*/
 .grid-x-axis {
-  border: 1px solid green;
+  padding-right: 7px;
+  text-align: right;
+  /*border: 1px solid green;*/
 }
 .grid-number-labels {
   width: 37px;
   height: 37px;
+  text-align: center;
   line-height: 37px;
   border: 1px solid black;
   display: inline-block;
 }
 .grid-y-axis {
+  margin-right: -1px;
   display: inline-block;
-  border: 1px solid green;
+  vertical-align: top;
+  /*border: 1px solid green;*/
 }
 .grid-letter-labels {
   width: 37px;
@@ -111,12 +117,12 @@ main {
   line-height: 37px;
   border: 1px solid black;
 }
+/*End of CSS for the grid labels*/
 
 /*CSS for the grids:*/
 .grid {
-  width: 420px;
-  padding-left: 30px;
-  border: 1px solid blue;
+  width: 372px;
+  /*border: 1px solid blue;*/
   display: inline-block;
 }
 .my-grid {}
