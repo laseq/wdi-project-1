@@ -102,10 +102,14 @@ main {
   display: inline-block;
 }
 .grid-y-axis {
-
+  display: inline-block;
+  border: 1px solid green;
 }
 .grid-letter-labels {
-
+  width: 37px;
+  height: 37px;
+  line-height: 37px;
+  border: 1px solid black;
 }
 
 /*CSS for the grids:*/

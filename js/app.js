@@ -17,17 +17,23 @@ $(()=>{
 
   // Put ul's and lists to become the x and y-axis labels for the grids
   $('.player-column').append('<ul>');
+  $('.tracking-column').append('<ul>');
   $('.player-column ul').addClass('grid-x-axis');
+  $('.tracking-column ul').addClass('grid-x-axis');
   for (let i = 0; i < 10; i++) {
-    $('.grid-x-axis').append('<li>');
+    $('.player-column .grid-x-axis').append('<li>');
+    $('.tracking-column .grid-x-axis').append('<li>');
   }
-  const $playerXAxisLabels = $('.grid-x-axis li');
+  const $playerXAxisLabels = $('.player-column .grid-x-axis li');
+  const $trackingXAxisLabels = $('.tracking-column .grid-x-axis li');
   $playerXAxisLabels.addClass('grid-number-labels');
+  $trackingXAxisLabels.addClass('grid-number-labels');
   for (let i = 0; i < $playerXAxisLabels.length; i++) {
     $($playerXAxisLabels[i]).text(i+1);
+    $($trackingXAxisLabels[i]).text(i+1);
   }
 
-  // Put 2 ul's in body to be the player's grid and the player's tracking grid
+  // Put 2 ul's in body to be the player's ship grid and the player's tracking grid
   $('.player-column').append('<ul>');
   $('.tracking-column').append('<ul>');
   const $myGrid = $('ul')[2];
@@ -35,7 +41,7 @@ $(()=>{
   // Add classes to the two grids
   // $('ul').first().addClass('grid my-grid');
   $('.player-column ul:nth-child(3)').addClass('grid my-grid');
-  $('.tracking-column ul').addClass('grid tracking-grid');
+  $('.tracking-column ul:nth-child(3)').addClass('grid tracking-grid');
   // Create the li elements for the two grids.
   // It's a 10x10 grid so 100 li elements(squares) for each grid
   for (let i=0; i<100; i++){
