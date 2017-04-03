@@ -3,7 +3,8 @@
 }
 
 body {
-  background: #babfc6;
+  /*background: #babfc6;*/
+  background-color: #2C3539;
   margin: 0 auto;
   font-family: 'Orbitron', sans-serif;
 }
@@ -89,6 +90,22 @@ main {
   position: relative;
 }
 /*End of CSS for the ship image boxes:*/
+
+.grid-x-axis {
+  border: 1px solid green;
+}
+.grid-number-labels {
+  width: 37px;
+  height: 37px;
+  border: 1px solid black;
+  display: inline-block;
+}
+.grid-y-axis {
+
+}
+.grid-letter-labels {
+
+}
 
 /*CSS for the grids:*/
 .grid {
