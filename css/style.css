@@ -97,6 +97,7 @@ main {
 .grid-number-labels {
   width: 37px;
   height: 37px;
+  line-height: 37px;
   border: 1px solid black;
   display: inline-block;
 }
@@ -110,7 +111,7 @@ main {
 /*CSS for the grids:*/
 .grid {
   width: 420px;
-  padding: 30px 0 0 30px;
+  padding-left: 30px;
   border: 1px solid blue;
   display: inline-block;
 }
