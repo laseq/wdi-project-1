@@ -1,6 +1,7 @@
 $(()=>{
 
   const gridWidth = 10;
+  const squareWidth = 37; // Used for the ship images
   const lettersForGridYAxis = ['A','B','C','D','E','F','G','H','I','J'];
   const playerGuesses = {
     all: [],
@@ -161,6 +162,7 @@ $(()=>{
         // We only draw the ships for the human player and not the computer
         if (fleet[0].player === 'human'){
           drawShipOnGrid(fleet[i].location);
+          shipImageOnGrid(fleet[i].location,fleet[i].unit,fleet[i].size);
         }
         for (let i=0; i<proposedLocations.length; i++){
           proposedLocations.pop();
@@ -232,13 +234,82 @@ $(()=>{
       return proposedLocationsArray[randomArraySlot];
     }
 
-    // Draw the ships on the player's grid
+    // Draw the ships(gray squares) on the player's grid
     function drawShipOnGrid(shipLocation){
       for (let i = 0; i < shipLocation.length; i++) {
         $($mySquareList[shipLocation[i]]).removeClass('water');
         $($mySquareList[shipLocation[i]]).addClass('my-ships');
       }
     }
+
+    // Put the actual ship images on the player's grid
+    function shipImageOnGrid(shipLocation,unit,size){
+      const imgWidth = squareWidth+'px';
+      const imgHeight = (squareWidth*size)+'px';
+
+      const shipDirection = calcShipImgOrientation(shipLocation);
+      const shipImgCoords = calcShipImgCoords(shipLocation,shipDirection);
+      const shipImgX = shipImgCoords[0]+'px';
+      const shipImgY = shipImgCoords[1]+'px';
+      const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
+
+      $('.my-grid').append('<img src="'+ shipImgString +'" height="'+ imgHeight +'" width="'+ imgWidth +'">');
+      const $shipImg = $('.my-grid img');
+      console.log('shipImgX:',shipImgX,'shipImgY:',shipImgY);
+      $($shipImg).css({
+        position: 'absolute',
+        top: shipImgY,
+        left: shipImgX
+      });
+    }
+    function calcShipImgOrientation(shipLocation){
+      if ((shipLocation[0]-shipLocation[1])===1){
+        console.log('Ship is oriented leftwards');
+        return 'left';
+      } else if ((shipLocation[0]-shipLocation[1])===-1){
+        console.log('Ship is oriented rightwards');
+        return 'right';
+      } else if ((shipLocation[0]-shipLocation[1])=== gridWidth){
+        console.log('Ship is oriented upwards');
+        return 'up';
+      } else if ((shipLocation[0]-shipLocation[1])=== -1*gridWidth){
+        console.log('Ship is oriented downwards');
+        return 'down';
+      } else {
+        console.log('The if statement in calcShipImgOrientation didn\'t work');
+      }
+    }
+    function calcShipImgCoords(shipLocation,direction){
+      let imgCoords;
+      switch(direction){
+        case 'left':
+          // The co-ords will be at the top left of shipLocation[last]
+          imgCoords = linearLocationToXAndYCoords(shipLocation[shipLocation.length-1]);
+          break;
+        case 'right':
+          // The co-ords will be at the top left of shipLocation[first]
+          imgCoords = linearLocationToXAndYCoords(shipLocation[0]);
+          break;
+        case 'up':
+          // The co-ords will be at the top left of shipLocation[last]
+          imgCoords = linearLocationToXAndYCoords(shipLocation[shipLocation.length-1]);
+          break;
+        case 'down':
+          // The co-ords will be at the top left of shipLocation[first]
+          imgCoords = linearLocationToXAndYCoords(shipLocation[0]);
+          break;
+        default:
+          console.log('Something went wrong with the switch statement in calcShipImgCoords');
+      }
+      return imgCoords;
+    }
+    function linearLocationToXAndYCoords(location){
+      // We're also multiplying it by squareWidth as it's the factor for our grid
+      const xCoord = (location%gridWidth)*squareWidth;
+      const yCoord = (Math.floor(location/gridWidth))*squareWidth;
+      return [xCoord,yCoord];
+    }
+
   } //End of function placeShipsOnGrid
 
   // This is where the gameplay starts
@@ -247,7 +318,7 @@ $(()=>{
     //console.log('Clicked '+ $(this).index());
     const squareId = $(this).index();
     if (playerGuesses.all.includes(squareId)){
-      $('.info-bar').text('You\'ve already bombed this location. Bomb another one.')
+      $('.info-bar').text('You\'ve already bombed this location. Bomb another one.');
       return;
     }
     playerGuesses.all.push(squareId);

@@ -143,7 +143,9 @@ main {
   /*border: 1px solid blue;*/
   display: inline-block;
 }
-.my-grid {}
+.my-grid {
+  position: relative;
+}
 .tracking-grid {}
 
 .squares {
