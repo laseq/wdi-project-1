@@ -248,32 +248,48 @@ $(()=>{
       const imgHeight = (squareWidth*size)+'px';
 
       const shipDirection = calcShipImgOrientation(shipLocation);
-      const shipImgCoords = calcShipImgCoords(shipLocation,shipDirection);
-      const shipImgX = shipImgCoords[0]+'px';
-      const shipImgY = shipImgCoords[1]+'px';
+      let shipImgCoords = calcShipImgCoords(shipLocation,shipDirection);
+      const shipImgRotation = calcShipImgRotation(shipDirection);
       const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
 
+      console.log('shipImgCoords before calcImgTranslation:',shipImgCoords);
+      // Translation(moving the image) is required after rotation
+      // because it would be in the wrong spot otherwise
+      shipImgCoords = calcImgTranslation(shipDirection,imgHeight,shipImgCoords);
+      console.log('shipImgCoords after calcImgTranslation:',shipImgCoords);
+      const shipImgX = shipImgCoords[0]+'px';
+      const shipImgY = shipImgCoords[1]+'px';
+
       $('.my-grid').append('<img src="'+ shipImgString +'" height="'+ imgHeight +'" width="'+ imgWidth +'">');
-      const $shipImg = $('.my-grid img');
+      // The img:last-child element is being used because we don't want to select
+      // the img elements that were created previously
+      const $shipImg = $('.my-grid img:last-child');
+      $shipImg.addClass(unit);
       console.log('shipImgX:',shipImgX,'shipImgY:',shipImgY);
       $($shipImg).css({
         position: 'absolute',
         top: shipImgY,
-        left: shipImgX
+        left: shipImgX,
+        transform: 'rotate('+shipImgRotation+')',
+        '-ms-transform': 'rotate('+shipImgRotation+')', /* IE 9 */
+        '-moz-transform': 'rotate('+shipImgRotation+')', /* Firefox */
+        '-webkit-transform': 'rotate('+shipImgRotation+')', /* Safari and Chrome */
+        '-o-transform': 'rotate('+shipImgRotation+')' /* Opera */
       });
     }
+
     function calcShipImgOrientation(shipLocation){
       if ((shipLocation[0]-shipLocation[1])===1){
-        console.log('Ship is oriented leftwards');
+        // console.log('Ship is oriented leftwards');
         return 'left';
       } else if ((shipLocation[0]-shipLocation[1])===-1){
-        console.log('Ship is oriented rightwards');
+        // console.log('Ship is oriented rightwards');
         return 'right';
       } else if ((shipLocation[0]-shipLocation[1])=== gridWidth){
-        console.log('Ship is oriented upwards');
+        // console.log('Ship is oriented upwards');
         return 'up';
       } else if ((shipLocation[0]-shipLocation[1])=== -1*gridWidth){
-        console.log('Ship is oriented downwards');
+        // console.log('Ship is oriented downwards');
         return 'down';
       } else {
         console.log('The if statement in calcShipImgOrientation didn\'t work');
@@ -308,6 +324,39 @@ $(()=>{
       const xCoord = (location%gridWidth)*squareWidth;
       const yCoord = (Math.floor(location/gridWidth))*squareWidth;
       return [xCoord,yCoord];
+    }
+    function calcShipImgRotation(direction){
+      let rotation;
+      switch(direction){
+        case 'left':
+          rotation = '270deg';
+          break;
+        case 'right':
+          rotation = '90deg';
+          break;
+        case 'up':
+          rotation = '0deg';
+          break;
+        case 'down':
+          rotation = '180deg';
+          break;
+        default:
+          console.log('Something went wrong in the switch statement in calcShipImgRotation');
+      }
+      return rotation;
+    }
+    // This function has been created because the rotation results in
+    // the ship image being moved away from it's intended location
+    // This function calculates the translation required to move it
+    // to where it needs to be
+    function calcImgTranslation(direction,imgHeight,imgCoords){
+      if (direction === 'left' || direction === 'right'){
+        // Increase xCoord by square width
+        imgCoords[0] += (0.5*parseFloat(imgHeight)-0.5*parseFloat(squareWidth));
+        // Decrease yCoord by (0.5*imgHeight - 0.5*squareWidth)
+        imgCoords[1] -= (0.5*parseFloat(imgHeight)-0.5*parseFloat(squareWidth));
+      }
+      return imgCoords;
     }
 
   } //End of function placeShipsOnGrid

@@ -215,7 +215,7 @@ footer {
   width: 37px;
   height: 37px;
   background: url('../images/water.png');
-  z-index: -50;
+  /*z-index: -50;*/
 }
 .tracking-column .water:hover {
   border: 2px solid #3c82f2;
