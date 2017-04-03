@@ -15,6 +15,7 @@ $(()=>{
   };
   const hitsToWin = 17;
   let gameOver = false;
+  const compMoveTimeDelay = 500;
 
   // Create ul's and li's to become the x and y-axis labels for the grids
   $('.player-column .grid-container').append('<ul>'); // The x-axis number labels
@@ -376,7 +377,7 @@ $(()=>{
     // Cycle through enemy ships to see if you've made a hit
     checkHits(playerGuesses,enemyShips,squareId,this);
     // The computer makes their move next after a time lag
-    setTimeout(computerTurn, 2000);
+    setTimeout(computerTurn, compMoveTimeDelay);
     // computerTurn();
   }
   $trackingSquareList.on('click', checkHitsOnEnemy);

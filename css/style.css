@@ -18,19 +18,20 @@ header {
 
 h1 {
   text-transform: uppercase;
-  font-size: 50px;
+  font-size: 55px;
   font-weight: bold;
 }
 
 main {
   max-width: 960px;
-  margin: 0 auto;
-  background-color: beige;
+  margin: 10px auto;
+  padding: 20px 0;
+  background-color: #b1b1b3;
   text-align: center;
 }
 .info-bar {
   margin: 0 auto;
-  padding: 8px 0;
+  padding: 8px 0 6px;
   max-width: 88%;
   font-size: 20px;
   font-weight: bold;
@@ -47,10 +48,18 @@ main {
 /*CSS for the ship image boxes:*/
 .ship-images {
   max-width: 420px;
+  padding-bottom: 15px;
   text-align: center;
-  border: 2px solid maroon;
-  border-radius: 5px;
+  /*border: 2px solid maroon;*/
+  border-top: 5px solid #202121;
+  border-right: 5px solid #202121;
+  border-left: 5px solid #202121;
+  border-radius: 5px 5px 0 0;
   text-transform: uppercase;
+  background-color: grey;
+  position: relative;
+  top: 5px;
+  z-index: 1;
 }
 .ship-images h2 {
   font-size: 20px;
@@ -63,6 +72,9 @@ main {
   font-size: 12px;
 }
 .img-col-1-1 {
+  margin-top: -20px;
+  text-align: left;
+  padding-left: 20px;
   width: 99.5%;
 }
 .img-col-1-1 img {
@@ -97,7 +109,9 @@ main {
   border-top: 6px solid #202121;
   border-bottom: 6px solid #202121;
   background-color: #202121;
-  border-radius: 6px;
+  border-radius: 0 0 6px 6px;
+  position: relative;
+  z-index: 2;
 }
 
 /*CSS for the grid labels*/
@@ -146,10 +160,23 @@ main {
 .my-grid {
   position: relative;
 }
+
+/*Experimenting with putting a red dot over divs*/
+/*.img-col-1-2:before {
+  position: absolute;
+  content: '';
+  background-color:#FF0000;
+  border-radius:50%;
+  opacity:1;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+}*/
+
 .tracking-grid {}
 
 .squares {
-  margin-bottom: -4px;;
+  margin-bottom: -4px;
   background-color: #3c82f2;
   width: 37px;
   height: 37px;
@@ -194,11 +221,15 @@ main {
 }
 
 .my-ships{
-  background-color: grey;
+  /*background-color: grey;*/
+  background: url('../images/water.png');
 }
 .my-squares-hit {
   /*background-color: red;*/
-  background: radial-gradient(red 25%,grey 75%);
+  background: radial-gradient(red 25%, rgba(65, 116, 139, 0.8) 75%);
+  /*background-color: red;*/
+  position: relative;
+  z-index:20;
 }
 .my-squares-missed {
   /*New colours with the water tile:*/
