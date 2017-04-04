@@ -577,18 +577,9 @@ $(()=>{
     placeShipsOnGrid(enemyShips);
 
     const shipImageBoxArray = ['carrier','battleship','destroyer','submarine','cruiser'];
-
-    // <div class="ship-images">
-    //   <h2>My Fleet</h2>
-    //   <div class="img-col-1-1">
-    //     <img id="player-carrier-img" src="sea-warfare-set/carrier-side.png" alt="Carrier side view">
-    //     <p>Carrier</p>
-    //   </div>
     // Reset the ship images in the boxes above the two grids
     for (let j=0; j<5; j++){
       $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
-      // console.log(shipImageBoxArray[j]);
-      // console.log($('.ship-images img:nth-child('+(j+1)+')'));
     }
 
   });
