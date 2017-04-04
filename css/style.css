@@ -226,7 +226,9 @@ main {
 }
 .my-squares-hit {
   /*background-color: red;*/
-  background: radial-gradient(red 25%, rgba(65, 116, 139, 0.8) 75%);
+  height: 37px;
+  width: 37px;
+  background: radial-gradient(red 25%, rgba(65, 116, 139, 0.5) 75%);
   /*background-color: red;*/
   position: relative;
   z-index:20;

@@ -420,7 +420,9 @@ $(()=>{
           $(theSquareElement).addClass('tracking-squares-hit');
           $(theSquareElement).removeClass('water');
         } else {
-          $(theSquareElement).addClass('my-squares-hit');
+          //$(theSquareElement).addClass('my-squares-hit');
+          // Experimenting with placing a div inside the li
+          $(theSquareElement).prepend('<div class="my-squares-hit"></div>');
         }
         // Displaying further messages like 'sank ship', 'sank fleet',
         // crossing out ship images etc
