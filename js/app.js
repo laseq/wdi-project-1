@@ -395,14 +395,22 @@ $(()=>{
       }
     } while (guessingUsedSquares);
     gunShotSound();
+    console.log('compGuess', compGuess);
     computerGuesses.all.push(compGuess);
-    const theSquareElement = $mySquareList[compGuess];
+    // const theSquareElement = $mySquareList[compGuess];
+    const theSquareElement = $('.my-grid li')[compGuess]; // Using $('.my-grid li') here because $mySquareList becomes a ghost variable on game restart
+
     checkHits(computerGuesses,myShips,compGuess,theSquareElement);
     // Turn player clicking back on
     $trackingSquareList.on('click', checkHitsOnEnemy);
   }
 
   function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
+    console.log('Entered checkHits');
+    console.log('attackerGuessObject:',attackerGuessObject);
+    console.log('fleetToHit:', fleetToHit);
+    console.log('squareId:',squareId);
+    console.log('theSquareElement:',theSquareElement);
     let hitsThisTurn = 0;
     // Cycle through enemy ships to see if you've made a hit
     for (let i=0;i<fleetToHit.length;i++){
@@ -420,9 +428,9 @@ $(()=>{
           $(theSquareElement).addClass('tracking-squares-hit');
           $(theSquareElement).removeClass('water');
         } else {
-          //$(theSquareElement).addClass('my-squares-hit');
+          // $(theSquareElement).addClass('my-squares-hit');
           // Experimenting with placing a div inside the li
-          $(theSquareElement).prepend('<div class="my-squares-hit"></div>');
+          $(theSquareElement).append('<div class="my-squares-hit"></div>');
         }
         // Displaying further messages like 'sank ship', 'sank fleet',
         // crossing out ship images etc
@@ -546,8 +554,10 @@ $(()=>{
     myShips = [];
     enemyShips = [];
 
+    // $('.my-grid div').remove();
     $('.my-grid li').remove();
     $('.tracking-grid li').remove();
+
     // Create the li elements for the two grids.
     // It's a 10x10 grid so 100 li elements(squares) for each grid
     for (let i=0; i<100; i++){
@@ -561,7 +571,7 @@ $(()=>{
     $trackingSquareList.addClass('squares tracking-squares water');
     $trackingSquareList.on('click', checkHitsOnEnemy);
 
-    $('.my-grid img').remove();
+    $('.my-grid img').remove(); //Remove the ship sprite images off the grids
     createShips();
     placeShipsOnGrid(myShips);
     placeShipsOnGrid(enemyShips);
@@ -577,8 +587,8 @@ $(()=>{
     // Reset the ship images in the boxes above the two grids
     for (let j=0; j<5; j++){
       $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
-      console.log(shipImageBoxArray[j]);
-      console.log($('.ship-images img:nth-child('+(j+1)+')'));
+      // console.log(shipImageBoxArray[j]);
+      // console.log($('.ship-images img:nth-child('+(j+1)+')'));
     }
 
   });
