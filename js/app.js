@@ -475,10 +475,27 @@ $(()=>{
       $('.info-bar').text('The computer missed you');
       console.log('The computer missed you');
     }
-  }
+  } //End of function checkHits
+
+  // Audio
+  function setUpAudio(){
+    const $backgroundMusic = $('.background-music')[0];
+    const $bgmBtn = $('.bgm-btn')[0];
+
+    $($backgroundMusic).prop('volume', 0.3);
+    $backgroundMusic.play();
+    $($bgmBtn).on('click', function(){
+      if ($backgroundMusic.paused === false){
+        $backgroundMusic.pause();
+      } else {
+        $backgroundMusic.play();
+      }
+    });
+  } //End of function setUpAudio
 
   createShips();
   placeShipsOnGrid(myShips);
   placeShipsOnGrid(enemyShips);
+  setUpAudio();
 
 });
