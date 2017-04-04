@@ -3,19 +3,20 @@ $(()=>{
   const gridWidth = 10;
   const squareWidth = 37; // Used for the ship images
   const lettersForGridYAxis = ['A','B','C','D','E','F','G','H','I','J'];
-  const playerGuesses = {
+  let playerGuesses = {
     all: [],
     hits: [],
     player: 'human'
   };
-  const computerGuesses = {
+  let computerGuesses = {
     all: [],
     hits: [],
     player: 'computer'
   };
   const hitsToWin = 17;
   let gameOver = false;
-  const compMoveTimeDelay = 1500;
+  // compMoveTimeDelay = 1500 is a good speed
+  const compMoveTimeDelay = 100;
   const soundDelay = 550;
   let sfxMuted = false;
 
@@ -94,8 +95,8 @@ $(()=>{
     this.player = player;
   }
 
-  const myShips = [];
-  const enemyShips = [];
+  let myShips = [];
+  let enemyShips = [];
 
   function createShips(){
     myShips[0] = new ship('carrier','human');
@@ -117,7 +118,6 @@ $(()=>{
       let overlapBoolean; // Used for checking whether ships overlap each other
       // Select a random proposed spot to start placing a ship
       const randomSpot = Math.floor(Math.random()*Math.pow(gridWidth,2));
-      // console.log('randomSpot:',randomSpot);
 
       // Check to see which orientations are feasible
       // The following if statements can be read as:
@@ -172,7 +172,6 @@ $(()=>{
         }
       } else {
         // console.log('No locations available. Going through the loop again');
-        // console.log('i:', i);
         i--;
       }
     } //End of for loop that cycles through ships
@@ -255,11 +254,9 @@ $(()=>{
       const shipImgRotation = calcShipImgRotation(shipDirection);
       const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
 
-      console.log('shipImgCoords before calcImgTranslation:',shipImgCoords);
       // Translation(moving the image) is required after rotation
       // because it would be in the wrong spot otherwise
       shipImgCoords = calcImgTranslation(shipDirection,imgHeight,shipImgCoords);
-      console.log('shipImgCoords after calcImgTranslation:',shipImgCoords);
       const shipImgX = shipImgCoords[0]+'px';
       const shipImgY = shipImgCoords[1]+'px';
 
@@ -268,7 +265,6 @@ $(()=>{
       // the img elements that were created previously
       const $shipImg = $('.my-grid img:last-child');
       $shipImg.addClass(unit);
-      console.log('shipImgX:',shipImgX,'shipImgY:',shipImgY);
       $($shipImg).css({
         position: 'absolute',
         top: shipImgY,
@@ -283,16 +279,12 @@ $(()=>{
 
     function calcShipImgOrientation(shipLocation){
       if ((shipLocation[0]-shipLocation[1])===1){
-        // console.log('Ship is oriented leftwards');
         return 'left';
       } else if ((shipLocation[0]-shipLocation[1])===-1){
-        // console.log('Ship is oriented rightwards');
         return 'right';
       } else if ((shipLocation[0]-shipLocation[1])=== gridWidth){
-        // console.log('Ship is oriented upwards');
         return 'up';
       } else if ((shipLocation[0]-shipLocation[1])=== -1*gridWidth){
-        // console.log('Ship is oriented downwards');
         return 'down';
       } else {
         console.log('The if statement in calcShipImgOrientation didn\'t work');
@@ -367,7 +359,6 @@ $(()=>{
   // This is where the gameplay starts
   // Click on the tracking grid to guess where the computer's ships are located
   function checkHitsOnEnemy(){
-    //console.log('Clicked '+ $(this).index());
     const squareId = $(this).index();
     if (playerGuesses.all.includes(squareId)){
       $('.info-bar').text('You\'ve already bombed this location. Bomb another one.');
@@ -396,9 +387,8 @@ $(()=>{
 
     do {
       compGuess = Math.floor(Math.random()*Math.pow(gridWidth,2));
-      console.log('compGuess:', compGuess);
+      // We're checking to see if the computer guessed a used square
       if (computerGuesses.all.includes(compGuess)){
-        console.log('Comp guessed a used square');
         guessingUsedSquares = true;
       } else {
         guessingUsedSquares = false;
@@ -476,7 +466,6 @@ $(()=>{
       }
     }
     if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
-      // $(theSquareElement).removeClass('tracking-squares');
       $(theSquareElement).addClass('tracking-squares-missed');
       $(theSquareElement).removeClass('water');
       $('.info-bar').text('You didn\'t hit any targets');
@@ -484,7 +473,6 @@ $(()=>{
       $(theSquareElement).addClass('my-squares-missed');
       $(theSquareElement).removeClass('water');
       $('.info-bar').text('The computer missed you');
-      console.log('The computer missed you');
     }
   } //End of function checkHits
 
@@ -539,6 +527,61 @@ $(()=>{
       },soundDelay);
     }
   }
+  // End of audio section
+
+  $('#restart-btn').on('click',function(){
+    playerGuesses = {};
+    playerGuesses = {
+      all: [],
+      hits: [],
+      player: 'human'
+    };
+    computerGuesses = {};
+    computerGuesses = {
+      all: [],
+      hits: [],
+      player: 'computer'
+    };
+    gameOver = false;
+    myShips = [];
+    enemyShips = [];
+
+    $('.my-grid li').remove();
+    $('.tracking-grid li').remove();
+    // Create the li elements for the two grids.
+    // It's a 10x10 grid so 100 li elements(squares) for each grid
+    for (let i=0; i<100; i++){
+      $('.my-grid').append('<li>');
+      $('.tracking-grid').append('<li>');
+    }
+    // Add classes to the squares in each grid
+    const $mySquareList = $('.my-grid li');
+    $mySquareList.addClass('squares my-squares water');
+    const $trackingSquareList = $('.tracking-grid li');
+    $trackingSquareList.addClass('squares tracking-squares water');
+    $trackingSquareList.on('click', checkHitsOnEnemy);
+
+    $('.my-grid img').remove();
+    createShips();
+    placeShipsOnGrid(myShips);
+    placeShipsOnGrid(enemyShips);
+
+    const shipImageBoxArray = ['carrier','battleship','destroyer','submarine','cruiser'];
+
+    // <div class="ship-images">
+    //   <h2>My Fleet</h2>
+    //   <div class="img-col-1-1">
+    //     <img id="player-carrier-img" src="sea-warfare-set/carrier-side.png" alt="Carrier side view">
+    //     <p>Carrier</p>
+    //   </div>
+    // Reset the ship images in the boxes above the two grids
+    for (let j=0; j<5; j++){
+      $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
+      console.log(shipImageBoxArray[j]);
+      console.log($('.ship-images img:nth-child('+(j+1)+')'));
+    }
+
+  });
 
   createShips();
   placeShipsOnGrid(myShips);
