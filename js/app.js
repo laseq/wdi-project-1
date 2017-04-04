@@ -15,7 +15,9 @@ $(()=>{
   };
   const hitsToWin = 17;
   let gameOver = false;
-  const compMoveTimeDelay = 500;
+  const compMoveTimeDelay = 1500;
+  const soundDelay = 550;
+  let sfxMuted = false;
 
   // Create ul's and li's to become the x and y-axis labels for the grids
   $('.player-column .grid-container').append('<ul>'); // The x-axis number labels
@@ -371,14 +373,20 @@ $(()=>{
       $('.info-bar').text('You\'ve already bombed this location. Bomb another one.');
       return;
     }
+    gunShotSound();
     playerGuesses.all.push(squareId);
     // Turn player clicking off because it's the computer's turn
     $trackingSquareList.off('click', checkHitsOnEnemy);
     // Cycle through enemy ships to see if you've made a hit
     checkHits(playerGuesses,enemyShips,squareId,this);
     // The computer makes their move next after a time lag
-    setTimeout(computerTurn, compMoveTimeDelay);
-    // computerTurn();
+
+    // Making sure that if there's a hit, there's enough time to hear the sound if the sound effects are on
+    if (playerGuesses.all[playerGuesses.all.length-1]===playerGuesses.hits[playerGuesses.hits.length-1] && !sfxMuted){
+      setTimeout(computerTurn, compMoveTimeDelay+750);
+    } else {
+      setTimeout(computerTurn, compMoveTimeDelay);
+    }
   }
   $trackingSquareList.on('click', checkHitsOnEnemy);
 
@@ -396,6 +404,7 @@ $(()=>{
         guessingUsedSquares = false;
       }
     } while (guessingUsedSquares);
+    gunShotSound();
     computerGuesses.all.push(compGuess);
     const theSquareElement = $mySquareList[compGuess];
     checkHits(computerGuesses,myShips,compGuess,theSquareElement);
@@ -408,6 +417,7 @@ $(()=>{
     // Cycle through enemy ships to see if you've made a hit
     for (let i=0;i<fleetToHit.length;i++){
       if (fleetToHit[i].location.includes(squareId)){
+        hitSound();
         fleetToHit[i].hitLocation.push(squareId);
         attackerGuessObject.hits.push(squareId);
         if (fleetToHit[0].player === 'computer' && fleetToHit[i].hitLocation.length!==fleetToHit[i].size){
@@ -427,6 +437,7 @@ $(()=>{
         // Displaying further messages like 'sank ship', 'sank fleet',
         // crossing out ship images etc
         if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
+          sinkSound();
           if (fleetToHit[0].player === 'computer'){
             $('.info-bar').text('You sank your enemy\'s ' + fleetToHit[i].unit +'!');
             // Change the location of the sunken ship to the one with the red crosses
@@ -481,9 +492,13 @@ $(()=>{
   function setUpAudio(){
     const $backgroundMusic = $('.background-music')[0];
     const $bgmBtn = $('.bgm-btn')[0];
+    const $sfxBtn =  $('.sfx-btn')[0];
 
     $($backgroundMusic).prop('volume', 0.3);
     $backgroundMusic.play();
+    $backgroundMusic.loop = true;
+
+    // Toggle background music
     $($bgmBtn).on('click', function(){
       if ($backgroundMusic.paused === false){
         $backgroundMusic.pause();
@@ -491,7 +506,39 @@ $(()=>{
         $backgroundMusic.play();
       }
     });
+    // Toggle sound effects
+    $($sfxBtn).on('click', function(){
+      sfxMuted = sfxMuted ? false:true;
+    });
   } //End of function setUpAudio
+
+  function gunShotSound(){
+    if (!sfxMuted){
+      $('.sfx-audio')[0].src = 'sounds/gunshot.wav';
+      $('.sfx-audio').prop('volume', 0.3);
+      $('.sfx-audio')[0].play();
+    }
+  }
+
+  function hitSound(){
+    if (!sfxMuted){
+      setTimeout(function(){
+        $('.sfx-audio')[0].src = 'sounds/hit.wav';
+        $('.sfx-audio').prop('volume', 0.3);
+        $('.sfx-audio')[0].play();
+      },soundDelay);
+    }
+  }
+
+  function sinkSound(){
+    if (!sfxMuted){
+      setTimeout(function(){
+        $('.sfx-audio')[1].src = 'sounds/water-hit.wav';
+        $('.sfx-audio').prop('volume', 0.3);
+        $('.sfx-audio')[1].play();
+      },soundDelay);
+    }
+  }
 
   createShips();
   placeShipsOnGrid(myShips);
