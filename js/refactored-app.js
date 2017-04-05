@@ -7,7 +7,20 @@ Game.gameOver = false;
 Game.compMoveTimeDelay = 100;
 Game.soundDelay = 550;
 Game.sfxMuted = false;
+Game.playerGuesses = { all: [], hits: [], player: 'human' };
+Game.computerGuesses = { all: [], hits: [], player: 'computer' };
 
+Game.messages = {
+  alreadyBombed: 'You\'ve already bombed this location. Bomb another one.',
+  playerHitsComputer: 'You hit your enemy\'s ',
+  playerMissesComputer: 'You didn\'t hit any targets.',
+  playerSinksComputer: 'You sank your enemy\'s ',
+  playerDefeatsComputer: 'You sank your enemy\'s fleet',
+  computerHitsPlayer: 'The enemy hit our ',
+  computerMissesPlayer: 'The enemy missed us.',
+  computerSinksPlayer: 'The enemy sank our ',
+  computerDefeatsPlayer: 'The enemy sank our fleet'
+};
 
 Game.createGrids = function createGrids() {
   // Create ul's and li's to become the x and y-axis labels for the grids
@@ -64,116 +77,113 @@ Game.createShips = function createShips(){
   }
 };
 
-Game.placeShipsOnGrid = function placeShipsOnGrid(){
+//**********FUNCTIONS BELOW HERE**********
+Game.calculateProposedLocations = function calculateProposedLocations(randomSpot,proposedLocations,alignment,p,i){
+  proposedLocations.push(Game.computeAlignment(randomSpot,Game.shipObjects[p][i].size,alignment));
+  if (Game.doShipsOverlap(proposedLocations,i,Game.shipObjects[p])) proposedLocations.pop();
+};
 
-  //**********FUNCTIONS BELOW HERE**********
-  Game.calculateProposedLocations = function calculateProposedLocations(randomSpot,proposedLocations,alignment,p,i){
-    proposedLocations.push(Game.computeAlignment(randomSpot,Game.shipObjects[p][i].size,alignment));
-    if (Game.doShipsOverlap(proposedLocations,i,Game.shipObjects[p])) proposedLocations.pop();
-  };
+Game.computeAlignment = function computeAlignment(origin,size,alignment){
+  const array = [];
+  for (let i=0; i<size; i++){
+    if (alignment === 'North')array.push(origin-i*Game.gridWidth);
+    if (alignment === 'East') array.push(origin+i);
+    if (alignment === 'South') array.push(origin+i*Game.gridWidth);
+    if (alignment === 'West') array.push(origin-i);
+  }
+  return array;
+};
 
-  Game.computeAlignment = function computeAlignment(origin,size,alignment){
-    const array = [];
-    for (let i=0; i<size; i++){
-      if (alignment === 'North')array.push(origin-i*Game.gridWidth);
-      if (alignment === 'East') array.push(origin+i);
-      if (alignment === 'South') array.push(origin+i*Game.gridWidth);
-      if (alignment === 'West') array.push(origin-i);
-    }
-    return array;
-  };
-
-  // Make sure ships don't overlap. Returns a boolean.
-  Game.doShipsOverlap = function doShipsOverlap(proposedLocationsArray,shipIndex,fleet){
-    let result = false;
-    for (let i=0; i<shipIndex; i++){
-      const shipLocation = fleet[i].location;
-      for (let j=0; j<shipLocation.length; j++){
-        if (proposedLocationsArray[proposedLocationsArray.length-1].includes(shipLocation[j])){
-          result = true;
-        }
+// Make sure ships don't overlap. Returns a boolean.
+Game.doShipsOverlap = function doShipsOverlap(proposedLocationsArray,shipIndex,fleet){
+  let result = false;
+  for (let i=0; i<shipIndex; i++){
+    const shipLocation = fleet[i].location;
+    for (let j=0; j<shipLocation.length; j++){
+      if (proposedLocationsArray[proposedLocationsArray.length-1].includes(shipLocation[j])){
+        result = true;
       }
     }
-    return result;
-  };
+  }
+  return result;
+};
 
-  // Randomly select a feasible orientation for the ship's location and return the grid locations
-  Game.setShipOrientation = function setShipOrientation(proposedLocationsArray){
-    return proposedLocationsArray[Math.floor(Math.random()*proposedLocationsArray.length)];
-  };
+// Randomly select a feasible orientation for the ship's location and return the grid locations
+Game.setShipOrientation = function setShipOrientation(proposedLocationsArray){
+  return proposedLocationsArray[Math.floor(Math.random()*proposedLocationsArray.length)];
+};
 
-  // Put the ship images on the player's grid
-  Game.shipImageOnGrid = function shipImageOnGrid(shipLocation,unit,size){
-    const imgWidth = Game.squareWidth+'px';
-    const imgHeight = (Game.squareWidth*size)+'px';
-    const shipDirection = Game.calcShipImgOrientation(shipLocation);
-    let shipImgCoords = Game.calcShipImgCoords(shipLocation,shipDirection);
-    const shipImgRotation = Game.calcShipImgRotation(shipDirection);
-    const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
+// Put the ship images on the player's grid
+Game.shipImageOnGrid = function shipImageOnGrid(shipLocation,unit,size){
+  const imgWidth = Game.squareWidth+'px';
+  const imgHeight = (Game.squareWidth*size)+'px';
+  const shipDirection = Game.calcShipImgOrientation(shipLocation);
+  let shipImgCoords = Game.calcShipImgCoords(shipLocation,shipDirection);
+  const shipImgRotation = Game.calcShipImgRotation(shipDirection);
+  const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
 
-    for (let i = 0; i < shipLocation.length; i++) {
-      $(Game.$mySquareList[shipLocation[i]]).removeClass('water').addClass('my-ships');
-    }
+  for (let i = 0; i < shipLocation.length; i++) {
+    $(Game.$mySquareList[shipLocation[i]]).removeClass('water').addClass('my-ships');
+  }
 
-    // Translation(moving the image) is required after rotation because it would be in the wrong spot otherwise
-    shipImgCoords = Game.calcImgTranslation(shipDirection,imgHeight,shipImgCoords);
-    const shipImgX = shipImgCoords[0]+'px';
-    const shipImgY = shipImgCoords[1]+'px';
+  // Translation(moving the image) is required after rotation because it would be in the wrong spot otherwise
+  shipImgCoords = Game.calcImgTranslation(shipDirection,imgHeight,shipImgCoords);
+  const shipImgX = shipImgCoords[0]+'px';
+  const shipImgY = shipImgCoords[1]+'px';
 
-    $('.my-grid').append('<img src="'+ shipImgString +'" height="'+ imgHeight +'" width="'+ imgWidth +'">');
-    // The img:last-child element is being used because we don't want to select the img elements that were created previously
-    const $shipImg = $('.my-grid img:last-child');
-    $shipImg.addClass(unit);
-    $($shipImg).css({
-      position: 'absolute', top: shipImgY, left: shipImgX,
-      transform: 'rotate('+shipImgRotation+')',
-      '-ms-transform': 'rotate('+shipImgRotation+')', /* IE 9 */
-      '-moz-transform': 'rotate('+shipImgRotation+')', /* Firefox */
-      '-webkit-transform': 'rotate('+shipImgRotation+')' /* Safari and Chrome */
-    });
-  };
+  $('.my-grid').append('<img src="'+ shipImgString +'" height="'+ imgHeight +'" width="'+ imgWidth +'">');
+  // The img:last-child element is being used because we don't want to select the img elements that were created previously
+  const $shipImg = $('.my-grid img:last-child');
+  $shipImg.addClass(unit);
+  $($shipImg).css({
+    position: 'absolute', top: shipImgY, left: shipImgX,
+    transform: 'rotate('+shipImgRotation+')',
+    '-ms-transform': 'rotate('+shipImgRotation+')', /* IE 9 */
+    '-moz-transform': 'rotate('+shipImgRotation+')', /* Firefox */
+    '-webkit-transform': 'rotate('+shipImgRotation+')' /* Safari and Chrome */
+  });
+};
 
-  Game.calcShipImgOrientation = function calcShipImgOrientation(shipLocation){
-    if ((shipLocation[0]-shipLocation[1]) === 1) return 'left';
-    if ((shipLocation[0]-shipLocation[1]) === -1) return 'right';
-    if ((shipLocation[0]-shipLocation[1]) === Game.gridWidth) return 'up';
-    if ((shipLocation[0]-shipLocation[1]) === -1*Game.gridWidth) return 'down';
-  };
+Game.calcShipImgOrientation = function calcShipImgOrientation(shipLocation){
+  if ((shipLocation[0]-shipLocation[1]) === 1) return 'left';
+  if ((shipLocation[0]-shipLocation[1]) === -1) return 'right';
+  if ((shipLocation[0]-shipLocation[1]) === Game.gridWidth) return 'up';
+  if ((shipLocation[0]-shipLocation[1]) === -1*Game.gridWidth) return 'down';
+};
 
-  Game.calcShipImgCoords = function calcShipImgCoords(shipLocation,direction){
-    // If direction is left or up, the co-ords will be at the top left of shipLocation[last]
-    if (direction === 'left' || direction === 'up') return Game.linearLocationToXAndYCoords(shipLocation[shipLocation.length-1]);
-    // If direction is right or down, the co-ords will be at the top left of shipLocation[first]
-    if (direction === 'right' || direction === 'down') return Game.linearLocationToXAndYCoords(shipLocation[0]);
-  };
+Game.calcShipImgCoords = function calcShipImgCoords(shipLocation,direction){
+  // If direction is left or up, the co-ords will be at the top left of shipLocation[last]
+  if (direction === 'left' || direction === 'up') return Game.linearLocationToXAndYCoords(shipLocation[shipLocation.length-1]);
+  // If direction is right or down, the co-ords will be at the top left of shipLocation[first]
+  if (direction === 'right' || direction === 'down') return Game.linearLocationToXAndYCoords(shipLocation[0]);
+};
 
-  Game.linearLocationToXAndYCoords = function linearLocationToXAndYCoords(location){
-    // We're multiplying it by squareWidth as it's the factor for our grid
-    const xCoord = (location%Game.gridWidth)*Game.squareWidth;
-    const yCoord = (Math.floor(location/Game.gridWidth))*Game.squareWidth;
-    return [xCoord,yCoord];
-  };
+Game.linearLocationToXAndYCoords = function linearLocationToXAndYCoords(location){
+  // We're multiplying it by squareWidth as it's the factor for our grid
+  const xCoord = (location%Game.gridWidth)*Game.squareWidth;
+  const yCoord = (Math.floor(location/Game.gridWidth))*Game.squareWidth;
+  return [xCoord,yCoord];
+};
 
-  Game.calcShipImgRotation = function calcShipImgRotation(direction){
-    if (direction === 'left') return '270deg';
-    if (direction === 'right') return '90deg';
-    if (direction === 'up') return '0deg';
-    if (direction === 'down') return '180deg';
-  };
-  // This function has been created because the rotation results in the ship image being moved away from it's intended location
-  // This function calculates the translation required to move it to where it needs to be
-  Game.calcImgTranslation = function calcImgTranslation(direction,imgHeight,imgCoords){
-    if (direction === 'left' || direction === 'right'){
-      // Increase xCoord by (0.5*imgHeight - 0.5*squareWidth)
-      imgCoords[0] += (0.5*parseFloat(imgHeight)-0.5*parseFloat(Game.squareWidth));
-      // Decrease yCoord by (0.5*imgHeight - 0.5*squareWidth)
-      imgCoords[1] -= (0.5*parseFloat(imgHeight)-0.5*parseFloat(Game.squareWidth));
-    }
-    return imgCoords;
-  };
-  //**********FUNCTIONS ABOVE HERE**********
+Game.calcShipImgRotation = function calcShipImgRotation(direction){
+  if (direction === 'left') return '270deg';
+  if (direction === 'right') return '90deg';
+  if (direction === 'up') return '0deg';
+  if (direction === 'down') return '180deg';
+};
+// This function has been created because the rotation results in the ship image being moved away from it's intended location
+// This function calculates the translation required to move it to where it needs to be
+Game.calcImgTranslation = function calcImgTranslation(direction,imgHeight,imgCoords){
+  if (direction === 'left' || direction === 'right'){
+    // Increase xCoord by (0.5*imgHeight - 0.5*squareWidth)
+    imgCoords[0] += (0.5*parseFloat(imgHeight)-0.5*parseFloat(Game.squareWidth));
+    // Decrease yCoord by (0.5*imgHeight - 0.5*squareWidth)
+    imgCoords[1] -= (0.5*parseFloat(imgHeight)-0.5*parseFloat(Game.squareWidth));
+  }
+  return imgCoords;
+};
 
-
+Game.placeShipsOnGrid = function placeShipsOnGrid(){
   // Cycle through the player's and the computer's ships
   for (let p=0; p<Game.shipObjects.length;p++){
     // We're cycling through each ship from carrier to destroyer here
@@ -215,43 +225,30 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
   } //End of for loop the cycles through the two players
 }; // End of function placeShipsOnGrid
 
-Game.messages = {
-  alreadyBombed: 'You\'ve already bombed this location. Bomb another one.',
-  playerHitsComputer: 'You hit your enemy\'s ',
-  playerMissesComputer: 'You didn\'t hit any targets.',
-  playerSinksComputer: 'You sank your enemy\'s ',
-  playerDefeatsComputer: 'You sank your enemy\'s fleet',
-  computerHitsPlayer: 'The enemy hit our ',
-  computerMissesPlayer: 'The enemy missed us.',
-  computerSinksPlayer: 'The enemy sank our ',
-  computerDefeatsPlayer: 'The enemy sank our fleet'
-};
 
-Game.playerGuesses = { all: [], hits: [], player: 'human' };
-Game.computerGuesses = { all: [], hits: [], player: 'computer' };
 // This is where the gameplay starts
 // Click on the tracking grid to guess where the computer's ships are located
-function fireShot(){
+Game.fireShot = function fireShot(){
   if (Game.gameOver) return;
   const squareId = $(this).index();
   if (Game.playerGuesses.all.includes(squareId)){
     $('.info-bar').text(Game.messages.alreadyBombed);
     return;
   }
-  // gunShotSound();
+  Game.gunShotSound();
   Game.playerGuesses.all.push(squareId);
   Game.$trackingSquareList.off('click', fireShot); // Turn player clicking off because it's the computer's turn
-  checkHits(Game.playerGuesses,Game.shipObjects[1],squareId,this); // Cycle through enemy ships to see if you've made a hit
+  Game.checkHits(Game.playerGuesses,Game.shipObjects[1],squareId,this); // Cycle through enemy ships to see if you've made a hit
 
   // Making sure that if there's a hit, there's enough time to hear the sound if the sound effects are on
   if (Game.playerGuesses.all[Game.playerGuesses.all.length-1] === Game.playerGuesses.hits[Game.playerGuesses.hits.length-1] && !Game.sfxMuted){
-    setTimeout(computerTurn, Game.compMoveTimeDelay+750);
+    setTimeout(Game.computerTurn, Game.compMoveTimeDelay+750);
   } else {
-    setTimeout(computerTurn, Game.compMoveTimeDelay);
+    setTimeout(Game.computerTurn, Game.compMoveTimeDelay);
   }
-}
+};
 
-function computerTurn(){
+Game.computerTurn = function computerTurn(){
   let compGuess, guessingUsedSquares;
   do {
     compGuess = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
@@ -260,28 +257,28 @@ function computerTurn(){
   // gunShotSound();
   Game.computerGuesses.all.push(compGuess);
   const theSquareElement = $('.my-grid li')[compGuess]; // Using $('.my-grid li') here as $mySquareList becomes a ghost variable on game restart
-  checkHits(Game.computerGuesses,Game.shipObjects[0],compGuess,theSquareElement);
-  Game.$trackingSquareList.on('click', fireShot);// Turn player clicking back on
-}
+  Game.checkHits(Game.computerGuesses,Game.shipObjects[0],compGuess,theSquareElement);
+  Game.$trackingSquareList.on('click', Game.fireShot);// Turn player clicking back on
+};
 
-function sinkProcedure(attacker,unit,imgIdPrefix){
+Game.sinkProcedure = function sinkProcedure(attacker,unit,imgIdPrefix){
   const sinkMessage = (attacker === 'player') ? Game.messages.playerSinksComputer:Game.messages.computerSinksPlayer;
   $('.info-bar').text(sinkMessage + unit);
   // Change the location of the sunken ship to the one with the red crosses to show that it has been eliminated
   $(imgIdPrefix+unit+'-img').attr('src','sea-warfare-set/eliminated/'+unit+'-side.png');
-}
+};
 
-function missProcedure(theSquareElement,classToAdd,missMessage){
+Game.missProcedure = function missProcedure(theSquareElement,classToAdd,missMessage){
   $(theSquareElement).removeClass('water').addClass(classToAdd);
   $('.info-bar').text(missMessage);
-}
+};
 
-function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
+Game.checkHits = function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
   let hitsThisTurn = 0;
   // Cycle through enemy ships to see if you've made a hit
   for (let i=0;i<fleetToHit.length;i++){
     if (fleetToHit[i].location.includes(squareId)){
-      // hitSound();
+      Game.hitSound();
       fleetToHit[i].hitLocation.push(squareId);
       attackerGuessObject.hits.push(squareId);
       // If 'the defender is someone' && 'this unit hasn't been hit in all spots'
@@ -299,9 +296,9 @@ function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
       if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
         // sinkSound();
         if (fleetToHit[0].player === 'computer'){
-          sinkProcedure('player',fleetToHit[i].unit,'#player-');
+          Game.sinkProcedure('player',fleetToHit[i].unit,'#enemy-');
         } else {
-          sinkProcedure('computer',fleetToHit[i].unit,'#enemy-');
+          Game.sinkProcedure('computer',fleetToHit[i].unit,'#player-');
         }
         if (attackerGuessObject.hits.length === Game.hitsToWin){
           if (attackerGuessObject.player === 'human'){
@@ -309,7 +306,7 @@ function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
           } else {
             $('.info-bar').text(Game.messages.computerDefeatsPlayer);
           }
-          Game.$trackingSquareList.off('click', fireShot);
+          // Game.$trackingSquareList.off('click', Game.fireShot);
           Game.gameOver = true;
         }
       }
@@ -318,15 +315,55 @@ function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
     }
   }
   if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
-    missProcedure(theSquareElement,'tracking-squares-missed',Game.messages.playerMissesComputer);
+    Game.missProcedure(theSquareElement,'tracking-squares-missed',Game.messages.playerMissesComputer);
   } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human' && !Game.gameOver){
-    missProcedure(theSquareElement,'my-squares-missed',Game.messages.computerMissesPlayer);
+    Game.missProcedure(theSquareElement,'my-squares-missed',Game.messages.computerMissesPlayer);
   }
-} //End of function checkHits
+}; //End of function checkHits
 
+Game.setUpAudio = function setUpAudio(){
+  Game.$backgroundMusic = $('.background-music')[0];
+  Game.$bgmBtn = $('.bgm-btn')[0];
+  Game.$sfxBtn =  $('.sfx-btn')[0];
 
+  $(Game.$backgroundMusic).prop('volume', 0.3);
+  Game.$backgroundMusic.play();
+  Game.$backgroundMusic.loop = true;
+  // Toggle background music
+  $(Game.$bgmBtn).on('click', function(){
+    (!Game.$backgroundMusic.paused) ? Game.$backgroundMusic.pause() : Game.$backgroundMusic.play();
+  });
+  // Toggle sound effects
+  $(Game.$sfxBtn).on('click', function(){
+    Game.sfxMuted = Game.sfxMuted ? false:true;
+  });
+}; //End of function setUpAudio
 
+Game.gunShotSound = function gunShotSound(){
+  if (!Game.sfxMuted) Game.playGameSound('gunshot.wav',0);
+};
 
+Game.hitSound = function hitSound(){
+  if (!Game.sfxMuted){
+    setTimeout(function(){
+      Game.playGameSound('hit.wav',0);
+    },Game.soundDelay);
+  }
+};
+
+Game.sinkSound = function sinkSound(){
+  if (!Game.sfxMuted){
+    setTimeout(function(){
+      Game.playGameSound('water-hit.wav',1);
+    },Game.soundDelay);
+  }
+};
+
+Game.playGameSound = function playGameSound(fileName,arrayIndex){
+  $('.sfx-audio')[arrayIndex].src = 'sounds/'+ fileName;
+  $('.sfx-audio').prop('volume', 0.3);
+  $('.sfx-audio')[arrayIndex].play();
+};
 
 
 
@@ -335,7 +372,8 @@ Game.setup = function setup() {
   Game.createGrids();
   Game.createShips();
   Game.placeShipsOnGrid();
-  Game.$trackingSquareList.on('click', fireShot);
+  Game.$trackingSquareList.on('click', Game.fireShot);
+  Game.setUpAudio();
 
 };
 
