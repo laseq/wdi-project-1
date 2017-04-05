@@ -16,7 +16,7 @@ $(()=>{
   const hitsToWin = 17;
   let gameOver = false;
   // compMoveTimeDelay = 1500 is a good speed
-  const compMoveTimeDelay = 100;
+  const compMoveTimeDelay = 1000;
   const soundDelay = 550;
   let sfxMuted = false;
 
