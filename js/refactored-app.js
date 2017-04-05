@@ -22,6 +22,18 @@ Game.messages = {
   computerDefeatsPlayer: 'The enemy sank our fleet'
 };
 
+Game.createListElementsOnGrid = function createListElementsOnGrid() {
+  // Create the li elements for the two grids. A 10x10 grid results in 100 li elements for each grid
+  for (let i=0; i<100; i++){
+    $('.grid').append('<li>');
+  }
+  // Add classes to the squares in each grid
+  Game.$mySquareList = $('.my-grid li');
+  Game.$trackingSquareList = $('.tracking-grid li');
+  $(Game.$mySquareList).addClass('squares my-squares water');
+  $(Game.$trackingSquareList).addClass('squares tracking-squares water');
+};
+
 Game.createGrids = function createGrids() {
   // Create ul's and li's to become the x and y-axis labels for the grids
   for (let i=1; i<3; i++) {
@@ -46,15 +58,7 @@ Game.createGrids = function createGrids() {
   // Put 2 ul's in their respective columns to be the player's ship grid and the player's tracking grid
   $('.player-column .grid-container').append('<ul class="grid my-grid"></ul>');
   $('.tracking-column .grid-container').append('<ul class="grid tracking-grid"></ul>');
-  // Create the li elements for the two grids. A 10x10 grid results in 100 li elements for each grid
-  for (let i=0; i<100; i++){
-    $('.grid').append('<li>');
-  }
-  // Add classes to the squares in each grid
-  Game.$mySquareList = $('.my-grid li');
-  Game.$trackingSquareList = $('.tracking-grid li');
-  $(Game.$mySquareList).addClass('squares my-squares water');
-  $(Game.$trackingSquareList).addClass('squares tracking-squares water');
+  Game.createListElementsOnGrid();
 }; // End of function Game.createGrids
 
 // Create a ship constructor
@@ -77,7 +81,6 @@ Game.createShips = function createShips(){
   }
 };
 
-//**********FUNCTIONS BELOW HERE**********
 Game.calculateProposedLocations = function calculateProposedLocations(randomSpot,proposedLocations,alignment,p,i){
   proposedLocations.push(Game.computeAlignment(randomSpot,Game.shipObjects[p][i].size,alignment));
   if (Game.doShipsOverlap(proposedLocations,i,Game.shipObjects[p])) proposedLocations.pop();
@@ -221,13 +224,11 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
       } else {
         i--; // Since no locations are available, go through the loop again by decrementing i
       }
-    } //End of for loop that cycles through ships
-  } //End of for loop the cycles through the two players
+    } // End of for loop that cycles through ships
+  } // End of for loop the cycles through the two players
 }; // End of function placeShipsOnGrid
 
-
-// This is where the gameplay starts
-// Click on the tracking grid to guess where the computer's ships are located
+// Click on the tracking grid to fire a shot on where you think the computer's ships are located
 Game.fireShot = function fireShot(){
   if (Game.gameOver) return;
   const squareId = $(this).index();
@@ -365,16 +366,38 @@ Game.playGameSound = function playGameSound(fileName,arrayIndex){
   $('.sfx-audio')[arrayIndex].play();
 };
 
+Game.resetGame = function resetGame(){
+  Game.playerGuesses = { all: [], hits: [], player: 'human' };
+  Game.computerGuesses = { all: [], hits: [], player: 'computer' };
+  Game.gameOver = false;
+  Game.shipObjects = {};
 
+  console.log('Entered resetGame()');
 
-Game.setup = function setup() {
+  $('.my-grid li').remove();
+  $('.tracking-grid li').remove();
 
-  Game.createGrids();
+  Game.createListElementsOnGrid();
+  $('.my-grid img').remove(); //Remove the ship sprite images off the grids
   Game.createShips();
   Game.placeShipsOnGrid();
   Game.$trackingSquareList.on('click', Game.fireShot);
-  Game.setUpAudio();
 
+  const shipImageBoxArray = ['carrier','battleship','destroyer','submarine','cruiser'];
+  // Reset the ship images in the boxes above the two grids
+  // The for loop is done backwards here as looping forwards results in all images being set to the carrier image
+  for (let j=4; j>0; j--){
+    $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
+  }
+};
+
+Game.setup = function setup() {
+  Game.createGrids();
+  Game.createShips();
+  Game.placeShipsOnGrid();
+  Game.setUpAudio();
+  Game.$trackingSquareList.on('click', Game.fireShot);
+  $('#restart-btn').on('click',Game.resetGame);
 };
 
 $(Game.setup.bind(Game));
