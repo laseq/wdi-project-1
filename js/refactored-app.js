@@ -2,6 +2,11 @@ var Game = Game || {};
 
 Game.gridWidth = 10;
 Game.squareWidth = 37; // Used for the ship images
+Game.hitsToWin = 17;
+Game.gameOver = false;
+Game.compMoveTimeDelay = 100;
+Game.soundDelay = 550;
+Game.sfxMuted = false;
 
 
 Game.createGrids = function createGrids() {
@@ -33,8 +38,10 @@ Game.createGrids = function createGrids() {
     $('.grid').append('<li>');
   }
   // Add classes to the squares in each grid
-  $('.my-grid li').addClass('squares my-squares water');
-  $('.tracking-grid li').addClass('squares tracking-squares water');
+  Game.$mySquareList = $('.my-grid li');
+  Game.$trackingSquareList = $('.tracking-grid li');
+  $(Game.$mySquareList).addClass('squares my-squares water');
+  $(Game.$trackingSquareList).addClass('squares tracking-squares water');
 }; // End of function Game.createGrids
 
 // Create a ship constructor
@@ -166,7 +173,7 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
   };
   //**********FUNCTIONS ABOVE HERE**********
 
-  Game.$mySquareList = $('.my-grid li');
+
   // Cycle through the player's and the computer's ships
   for (let p=0; p<Game.shipObjects.length;p++){
     // We're cycling through each ship from carrier to destroyer here
@@ -208,6 +215,119 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
   } //End of for loop the cycles through the two players
 }; // End of function placeShipsOnGrid
 
+Game.messages = {
+  alreadyBombed: 'You\'ve already bombed this location. Bomb another one.',
+  playerHitsComputer: 'You hit your enemy\'s ',
+  playerMissesComputer: 'You didn\'t hit any targets.',
+  playerSinksComputer: 'You sank your enemy\'s ',
+  playerDefeatsComputer: 'You sank your enemy\'s fleet',
+  computerHitsPlayer: 'The enemy hit our ',
+  computerMissesPlayer: 'The enemy missed us.',
+  computerSinksPlayer: 'The enemy sank our ',
+  computerDefeatsPlayer: 'The enemy sank our fleet'
+};
+
+Game.playerGuesses = { all: [], hits: [], player: 'human' };
+Game.computerGuesses = { all: [], hits: [], player: 'computer' };
+// This is where the gameplay starts
+// Click on the tracking grid to guess where the computer's ships are located
+function fireShot(){
+  if (Game.gameOver) return;
+  const squareId = $(this).index();
+  if (Game.playerGuesses.all.includes(squareId)){
+    $('.info-bar').text(Game.messages.alreadyBombed);
+    return;
+  }
+  // gunShotSound();
+  Game.playerGuesses.all.push(squareId);
+  Game.$trackingSquareList.off('click', fireShot); // Turn player clicking off because it's the computer's turn
+  checkHits(Game.playerGuesses,Game.shipObjects[1],squareId,this); // Cycle through enemy ships to see if you've made a hit
+
+  // Making sure that if there's a hit, there's enough time to hear the sound if the sound effects are on
+  if (Game.playerGuesses.all[Game.playerGuesses.all.length-1] === Game.playerGuesses.hits[Game.playerGuesses.hits.length-1] && !Game.sfxMuted){
+    setTimeout(computerTurn, Game.compMoveTimeDelay+750);
+  } else {
+    setTimeout(computerTurn, Game.compMoveTimeDelay);
+  }
+}
+
+function computerTurn(){
+  let compGuess, guessingUsedSquares;
+  do {
+    compGuess = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
+    guessingUsedSquares = (Game.computerGuesses.all.includes(compGuess)) ? true:false;
+  } while (guessingUsedSquares);
+  // gunShotSound();
+  Game.computerGuesses.all.push(compGuess);
+  const theSquareElement = $('.my-grid li')[compGuess]; // Using $('.my-grid li') here as $mySquareList becomes a ghost variable on game restart
+  checkHits(Game.computerGuesses,Game.shipObjects[0],compGuess,theSquareElement);
+  Game.$trackingSquareList.on('click', fireShot);// Turn player clicking back on
+}
+
+function sinkProcedure(attacker,unit,imgIdPrefix){
+  const sinkMessage = (attacker === 'player') ? Game.messages.playerSinksComputer:Game.messages.computerSinksPlayer;
+  $('.info-bar').text(sinkMessage + unit);
+  // Change the location of the sunken ship to the one with the red crosses to show that it has been eliminated
+  $(imgIdPrefix+unit+'-img').attr('src','sea-warfare-set/eliminated/'+unit+'-side.png');
+}
+
+function missProcedure(theSquareElement,classToAdd,missMessage){
+  $(theSquareElement).removeClass('water').addClass(classToAdd);
+  $('.info-bar').text(missMessage);
+}
+
+function checkHits(attackerGuessObject,fleetToHit,squareId,theSquareElement){
+  let hitsThisTurn = 0;
+  // Cycle through enemy ships to see if you've made a hit
+  for (let i=0;i<fleetToHit.length;i++){
+    if (fleetToHit[i].location.includes(squareId)){
+      // hitSound();
+      fleetToHit[i].hitLocation.push(squareId);
+      attackerGuessObject.hits.push(squareId);
+      // If 'the defender is someone' && 'this unit hasn't been hit in all spots'
+      if (fleetToHit[0].player === 'computer' && fleetToHit[i].hitLocation.length!==fleetToHit[i].size){
+        $('.info-bar').text(Game.messages.playerHitsComputer + fleetToHit[i].unit);
+      } else if(fleetToHit[0].player === 'human' && fleetToHit[i].hitLocation.length!==fleetToHit[i].size) {
+        $('.info-bar').text(Game.messages.computerHitsPlayer + fleetToHit[i].unit);
+      }
+      if (fleetToHit[0].player === 'computer'){
+        $(theSquareElement).removeClass('water').addClass('tracking-squares-hit');
+      } else {
+        $(theSquareElement).append('<div class="my-squares-hit"></div>');
+      }
+      // Displaying further messages like 'sank ship', 'sank fleet', crossing out ship images etc
+      if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
+        // sinkSound();
+        if (fleetToHit[0].player === 'computer'){
+          sinkProcedure('player',fleetToHit[i].unit,'#player-');
+        } else {
+          sinkProcedure('computer',fleetToHit[i].unit,'#enemy-');
+        }
+        if (attackerGuessObject.hits.length === Game.hitsToWin){
+          if (attackerGuessObject.player === 'human'){
+            $('.info-bar').text(Game.messages.playerDefeatsComputer);
+          } else {
+            $('.info-bar').text(Game.messages.computerDefeatsPlayer);
+          }
+          Game.$trackingSquareList.off('click', fireShot);
+          Game.gameOver = true;
+        }
+      }
+      hitsThisTurn++;
+      break;
+    }
+  }
+  if (hitsThisTurn === 0 && fleetToHit[0].player === 'computer'){
+    missProcedure(theSquareElement,'tracking-squares-missed',Game.messages.playerMissesComputer);
+  } else if (hitsThisTurn === 0 && fleetToHit[0].player === 'human' && !Game.gameOver){
+    missProcedure(theSquareElement,'my-squares-missed',Game.messages.computerMissesPlayer);
+  }
+} //End of function checkHits
+
+
+
+
+
 
 
 Game.setup = function setup() {
@@ -215,6 +335,7 @@ Game.setup = function setup() {
   Game.createGrids();
   Game.createShips();
   Game.placeShipsOnGrid();
+  Game.$trackingSquareList.on('click', fireShot);
 
 };
 
