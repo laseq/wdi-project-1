@@ -3,7 +3,8 @@
 }
 
 body {
-  background-color: #2C3539;
+  background-color: #14568C;
+  /*background-color: #292F36;*/
   margin: 0 auto;
   font-family: 'Orbitron', sans-serif;
 }
@@ -12,33 +13,40 @@ header {
   margin: 0 auto;
   padding: 20px 0 10px;
   text-align: center;
-  background-color: grey;
+  background-color: #2c2d2d;
+  /*background-color: grey;*/
 }
 
 h1 {
   text-transform: uppercase;
   font-size: 55px;
   font-weight: bold;
+  color: #03a30b;
+  letter-spacing: 15px;
 }
 
 main {
+  height: 100%;
   max-width: 1200px;
-  margin: 10px auto;
-  padding: 10px 0;
-  background-color: #b1b1b3;
+  margin: 0 auto;
+  padding: 30px 0;
+  background-color: #BEBBBB;
+  /*background-color: #b1b1b3;*/
   text-align: center;
 }
 .info-bar {
   margin: 0 auto;
   padding: 8px 0 6px;
-  max-width: 85%;
+  width: 1014px;
   font-size: 20px;
   font-weight: bold;
   color: #03a30b;
   background-color: #2c2d2d;
   border: 2px solid black;
+  border-radius: 5px;
   display: block;
 }
+
 .player-column,
 .tracking-column {
   display: inline-block;
@@ -46,10 +54,10 @@ main {
 
 /*CSS for the ship image boxes:*/
 .ship-images {
-  max-width: 420px;
+  width: 506px;
+  height: 206px;
   padding-bottom: 15px;
-  text-align: center;
-  /*border: 2px solid maroon;*/
+  text-align: left;
   border-top: 5px solid #202121;
   border-right: 5px solid #202121;
   border-left: 5px solid #202121;
@@ -63,6 +71,7 @@ main {
 .ship-images h2 {
   font-size: 20px;
   padding-top: 10px;
+  text-align: center;
 }
 .ship-images img {
   max-width: 80%;
@@ -70,35 +79,45 @@ main {
 .ship-images p {
   font-size: 12px;
 }
-.img-col-1-1 {
+.carrier-divs {
   margin-top: -20px;
   text-align: left;
   padding-left: 20px;
   width: 99.5%;
 }
-.img-col-1-1 img {
-  max-width: 60%;
+.carrier-divs img {
+  width: 260px;
+  margin-left: 25px;
 }
-.img-col-1-1 p {
+.carrier-divs p {
   display: inline-block;
 }
-.img-col-3-5 {
-  width: 59.4%;
+.battleship-divs {
+  width: 210px;
 }
-.img-col-2-5 {
-  width: 39.5%;
+.destroyer-divs {
+  width: 180px;
 }
-.img-col-1-2 {
-  width: 49.4%;
+.submarine-divs,
+.cruiser-divs {
+  width: 200px;
 }
-.img-col-1-1,
-.img-col-3-5,
-.img-col-2-5,
-.img-col-1-2 {
+.battleship-divs,
+.destroyer-divs,
+.submarine-divs,
+.cruiser-divs {
   display: inline-block;
   vertical-align: bottom;
   border-radius: 5px;
   position: relative;
+  margin-left: 25px;
+  text-align: center;
+}
+.battleship-divs p,
+.destroyer-divs p,
+.submarine-divs p,
+.cruiser-divs p {
+  text-align: center;
 }
 /*End of CSS for the ship image boxes:*/
 
@@ -137,7 +156,6 @@ main {
   vertical-align: top;
   color: #03a30b;
   background-color: #2c2d2d;
-  /*border: 1px solid green;*/
 }
 .grid-letter-labels {
   font-size: 19px;
@@ -157,8 +175,6 @@ main {
   position: relative;
 }
 
-.tracking-grid {}
-
 .squares {
   margin-bottom: -4px;
   background-color: #3c82f2;
@@ -170,17 +186,13 @@ main {
   border: 1px solid rgba(12, 102, 247, 0.6);
   display: inline-block;
 }
-.my-squares {}
-.tracking-squares {}
 .tracking-squares:hover {
   cursor: none;
   background-image: url("../sea-warfare-set/crosshairs.png");
   background-position:50% 50%;  /* Sets reference point to scale from */
   background-size:cover;
-  /*background-color: #76a8f7;*/
 }
 .tracking-squares-hit {
-  /*background-color: red;*/
   background: radial-gradient(red 25%,#25627d 75%);
 }
 .tracking-squares-hit:hover {
@@ -191,10 +203,7 @@ main {
     background-size:cover;
 }
 .tracking-squares-missed {
-  /*New colours with the water tile:*/
   background: radial-gradient(rgb(84, 151, 214),#24617c);
-  /*Old colours without the water tile:*/
-  /*background: radial-gradient(#8ed2ff,#3c82f2);*/
 }
 .tracking-squares-missed:hover {
   background:
@@ -205,23 +214,17 @@ main {
 }
 
 .my-ships{
-  /*background-color: grey;*/
   background: url('../images/water.png');
 }
 .my-squares-hit {
-  /*background-color: red;*/
   height: 45px;
   width: 45px;
   background: radial-gradient(red 25%, rgba(65, 116, 139, 0.5) 75%);
-  /*background-color: red;*/
   position: relative;
   z-index:20;
 }
 .my-squares-missed {
-  /*New colours with the water tile:*/
   background: radial-gradient(rgb(84, 151, 214),#24617c);
-  /*Old colours without the water tile:*/
-  /*background: radial-gradient(#8ed2ff,#3c82f2);*/
 }
 /*End of CSS for the grids:*/
 
@@ -232,7 +235,6 @@ footer {
   width: 45px;
   height: 45px;
   background: url('../images/water.png');
-  /*z-index: -50;*/
 }
 .tracking-column .water:hover {
   border: 2px solid #3c82f2;
@@ -244,19 +246,9 @@ footer {
   background-position: 50% 50%;  /* Sets reference point to scale from */
   background-size:cover;
 }
-.water-animated {
-  width: 45px;
-  height: 45px;
-  background: url('../images/water.png') left center;
-  background-position: 0 0;
-  animation: play 2s steps(15) infinite;
-}
-@keyframes play {
-   100% { background-position: -480px; }
-}
 
 .bottom-buttons {
-  margin: 25px auto 10px;
+  margin: 20px auto 10px;
 }
 .ui-buttons {
   font-family: 'Orbitron', sans-serif;

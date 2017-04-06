@@ -15,27 +15,30 @@
       <h1>Battleship</h1>
     </header>
     <main>
-      <p class="info-bar">Welcome admiral</p>
+      <div class="info-bar">
+        <p>Welcome admiral. Choose a spot to bomb on the tracking grid on the right.</p>
+      </div>
+      <!-- <p class="info-bar">Welcome admiral. Sink our enemy or be sunk.</p> -->
       <section class="player-column">
         <div class="ship-images">
           <h2>My Fleet</h2>
-          <div class="img-col-1-1">
+          <div class="carrier-divs">
             <img id="player-carrier-img" src="sea-warfare-set/carrier-side.png" alt="Carrier side view">
             <p>Carrier</p>
           </div>
-          <div class="img-col-3-5">
+          <div class="battleship-divs">
             <img id="player-battleship-img" src="sea-warfare-set/battleship-side.png" alt="Battleship side view">
             <p>Battleship</p>
           </div>
-          <div class="img-col-2-5">
+          <div class="destroyer-divs">
             <img id="player-destroyer-img" src="sea-warfare-set/destroyer-side.png" alt="Destroyer side view">
             <p>Destroyer</p>
           </div>
-          <div class="img-col-1-2">
+          <div class="submarine-divs">
             <img id="player-submarine-img" src="sea-warfare-set/submarine-side.png" alt="Submarine side view">
             <p>Submarine</p>
           </div>
-          <div class="img-col-1-2">
+          <div class="cruiser-divs">
             <img id="player-cruiser-img" src="sea-warfare-set/cruiser-side.png" alt="Cruiser side view">
             <p>Cruiser</p>
           </div>
@@ -45,23 +48,23 @@
       <section class="tracking-column">
         <div class="ship-images">
           <h2>Enemy Fleet</h2>
-          <div class="img-col-1-1">
+          <div class="carrier-divs">
             <img id="enemy-carrier-img" src="sea-warfare-set/carrier-side.png" alt="Carrier side view">
             <p>Carrier</p>
           </div>
-          <div class="img-col-3-5">
+          <div class="battleship-divs">
             <img id="enemy-battleship-img" src="sea-warfare-set/battleship-side.png" alt="Battleship side view">
             <p>Battleship</p>
           </div>
-          <div class="img-col-2-5">
+          <div class="destroyer-divs">
             <img id="enemy-destroyer-img" src="sea-warfare-set/destroyer-side.png" alt="Destroyer side view">
             <p>Destroyer</p>
           </div>
-          <div class="img-col-1-2">
+          <div class="submarine-divs">
             <img id="enemy-submarine-img" src="sea-warfare-set/submarine-side.png" alt="Submarine side view">
             <p>Submarine</p>
           </div>
-          <div class="img-col-1-2">
+          <div class="cruiser-divs">
             <img id="enemy-cruiser-img" src="sea-warfare-set/cruiser-side.png" alt="Cruiser side view">
             <p>Cruiser</p>
           </div>
@@ -77,9 +80,5 @@
         <button type="button" name="button" class="ui-buttons sfx-btn">SFX on/off</button>
       </section>
     </main>
-
-    <footer>
-      <div class="water-test"></div>
-    </footer>
   </body>
 </html>

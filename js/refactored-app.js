@@ -4,7 +4,7 @@ Game.gridWidth = 10;
 Game.squareWidth = 45; // Used for the ship images
 Game.hitsToWin = 17;
 Game.gameOver = false;
-Game.compMoveTimeDelay = 100; // 1300 to 1800 is a good computer time delay
+Game.compMoveTimeDelay = 1300; // 1300 to 1800 is a good computer time delay
 Game.soundDelay = 350; // 320 to 380 is a good sound delay
 Game.sfxMuted = false;
 Game.playerGuesses = { all: [], hits: [], player: 'human' };
@@ -392,15 +392,23 @@ Game.resetGame = function resetGame(){
   Game.placeShipsOnGrid();
   Game.$trackingSquareList.on('click', Game.fireShot);
 
-  const shipImageBoxArray = ['carrier','battleship','destroyer','submarine','cruiser'];
   // Reset the ship images in the boxes above the two grids
-  let $shipImagesInBoxes = $('.ship-images img');
-  for (let j=0; j<5; j++){
-    $shipImagesInBoxes[j].attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
+  $('.ship-images img').remove();
+  const $carrierDivs = $('.carrier-divs');
+  const $battleshipDivs = $('.battleship-divs');
+  const $destroyerDivs = $('.destroyer-divs');
+  const $submarineDivs = $('.submarine-divs');
+  const $cruiserDivs = $('.cruiser-divs');
+  let playerString = 'player';
+
+  for (let i=0; i<2; i++){
+    if (i===1) playerString = 'enemy';
+    $($carrierDivs[i]).prepend('<img id="'+playerString+'-carrier-img" src="sea-warfare-set/carrier-side.png" alt="Carrier side view">');
+    $($battleshipDivs[i]).prepend('<img id="'+playerString+'-battleship-img" src="sea-warfare-set/battleship-side.png" alt="Battleship side view">');
+    $($destroyerDivs[i]).prepend('<img id="'+playerString+'-destroyer-img" src="sea-warfare-set/destroyer-side.png" alt="Carrier side view">');
+    $($submarineDivs[i]).prepend('<img id="'+playerString+'-submarine-img" src="sea-warfare-set/submarine-side.png" alt="Carrier side view">');
+    $($cruiserDivs[i]).prepend('<img id="'+playerString+'-cruiser-img" src="sea-warfare-set/cruiser-side.png" alt="Carrier side view">');
   }
-  // for (let j=0; j<5; j++){
-  //   $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
-  // }
 };
 
 Game.AIOneHitDetection = function AIOneHitDetection() {
