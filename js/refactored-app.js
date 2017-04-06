@@ -506,7 +506,6 @@ Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
       }
       if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult[i]-1)%10 !== 9){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] - 1);
-        debugger
       }
     }
   } else {
