@@ -381,7 +381,7 @@ Game.victorySound = function victoryMusic(){
       $(Game.$resultSound)[0].src = 'sounds/win.wav';
       $(Game.$resultSound).prop('volume', 0.3);
       Game.$resultSound.play();
-    }, Game.soundDelay+4500);
+    }, Game.soundDelay+5000);
   }
 };
 
