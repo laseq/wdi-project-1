@@ -233,6 +233,7 @@ Game.fireShot = function fireShot(){
   if (Game.gameOver) return;
   const squareId = $(this).index();
   if (Game.playerGuesses.all.includes(squareId)){
+    Game.errorSound();
     $('.info-bar').text(Game.messages.alreadyBombed);
     return;
   }
@@ -253,18 +254,13 @@ Game.computerTurn = function computerTurn(){
   if (Game.gameOver) return;
   let compGuess, guessingUsedSquares;
   const oneHitNextMove = Game.AINextMoveAfter1Hit();
-  console.log('oneHitNextMove:',oneHitNextMove);
   const twoHitsNextMove = Game.AINextMoveAfter2Hits();
-  console.log('twoHitsNextMove:',twoHitsNextMove);
   if (oneHitNextMove!==false && Game.computerGuesses.all.includes(oneHitNextMove) === false){
     compGuess = oneHitNextMove;
-    console.log('Entered comp using AI after one hit', 'compGuess:', compGuess);
   } else if (twoHitsNextMove!==false && Game.computerGuesses.all.includes(twoHitsNextMove) === false){
     compGuess = twoHitsNextMove;
-    console.log('Entered comp using AI after two hits', 'compGuess:', compGuess);
   } else {
     do {
-      console.log('Entered comp random guessing');
       compGuess = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
       guessingUsedSquares = (Game.computerGuesses.all.includes(compGuess)) ? true:false;
     } while (guessingUsedSquares);
@@ -393,6 +389,10 @@ Game.explosionSound = function explosionSound(){
       Game.playGameSound('explosion.mp3',0);
     },Game.soundDelay);
   }
+};
+
+Game.errorSound = function errorSound(){
+  if (!Game.sfxMuted) Game.playGameSound('error.wav',0);
 };
 
 Game.playGameSound = function playGameSound(fileName,arrayIndex){
