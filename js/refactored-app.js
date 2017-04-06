@@ -1,11 +1,11 @@
 var Game = Game || {};
 
 Game.gridWidth = 10;
-Game.squareWidth = 37; // Used for the ship images
+Game.squareWidth = 45; // Used for the ship images
 Game.hitsToWin = 17;
 Game.gameOver = false;
-Game.compMoveTimeDelay = 100;
-Game.soundDelay = 550;
+Game.compMoveTimeDelay = 100; // 1300 to 1800 is a good computer time delay
+Game.soundDelay = 350; // 320 to 380 is a good sound delay
 Game.sfxMuted = false;
 Game.playerGuesses = { all: [], hits: [], player: 'human' };
 Game.computerGuesses = { all: [], hits: [], player: 'computer' };
@@ -250,12 +250,24 @@ Game.fireShot = function fireShot(){
 };
 
 Game.computerTurn = function computerTurn(){
+  if (Game.gameOver) return;
   let compGuess, guessingUsedSquares;
-  do {
-    compGuess = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
-    guessingUsedSquares = (Game.computerGuesses.all.includes(compGuess)) ? true:false;
-  } while (guessingUsedSquares);
-  // gunShotSound();
+  const oneHitNextMove = Game.AINextMoveAfter1Hit();
+  const twoHitsNextMove = Game.AINextMoveAfter2Hits();
+  if (oneHitNextMove!==false && Game.computerGuesses.all.includes(oneHitNextMove) === false){
+    compGuess = oneHitNextMove;
+    console.log('Entered comp using AI after one hit', 'compGuess:', compGuess);
+  } else if (twoHitsNextMove!==false && Game.computerGuesses.all.includes(twoHitsNextMove) === false){
+    compGuess = twoHitsNextMove;
+    console.log('Entered comp using AI after two hits', 'compGuess:', compGuess);
+  } else {
+    do {
+      console.log('Entered comp random guessing');
+      compGuess = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
+      guessingUsedSquares = (Game.computerGuesses.all.includes(compGuess)) ? true:false;
+    } while (guessingUsedSquares);
+  }
+  Game.gunShotSound();
   Game.computerGuesses.all.push(compGuess);
   const theSquareElement = $('.my-grid li')[compGuess]; // Using $('.my-grid li') here as $mySquareList becomes a ghost variable on game restart
   Game.checkHits(Game.computerGuesses,Game.shipObjects[0],compGuess,theSquareElement);
@@ -295,7 +307,7 @@ Game.checkHits = function checkHits(attackerGuessObject,fleetToHit,squareId,theS
       }
       // Displaying further messages like 'sank ship', 'sank fleet', crossing out ship images etc
       if (fleetToHit[i].size === fleetToHit[i].hitLocation.length){
-        // sinkSound();
+        Game.sinkSound();
         if (fleetToHit[0].player === 'computer'){
           Game.sinkProcedure('player',fleetToHit[i].unit,'#enemy-');
         } else {
@@ -307,8 +319,8 @@ Game.checkHits = function checkHits(attackerGuessObject,fleetToHit,squareId,theS
           } else {
             $('.info-bar').text(Game.messages.computerDefeatsPlayer);
           }
-          // Game.$trackingSquareList.off('click', Game.fireShot);
           Game.gameOver = true;
+          return;
         }
       }
       hitsThisTurn++;
@@ -372,23 +384,118 @@ Game.resetGame = function resetGame(){
   Game.gameOver = false;
   Game.shipObjects = {};
 
-  console.log('Entered resetGame()');
-
   $('.my-grid li').remove();
   $('.tracking-grid li').remove();
-
-  Game.createListElementsOnGrid();
   $('.my-grid img').remove(); //Remove the ship sprite images off the grids
+  Game.createListElementsOnGrid();
   Game.createShips();
   Game.placeShipsOnGrid();
   Game.$trackingSquareList.on('click', Game.fireShot);
 
   const shipImageBoxArray = ['carrier','battleship','destroyer','submarine','cruiser'];
   // Reset the ship images in the boxes above the two grids
-  // The for loop is done backwards here as looping forwards results in all images being set to the carrier image
-  for (let j=4; j>0; j--){
-    $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
+  let $shipImagesInBoxes = $('.ship-images img');
+  for (let j=0; j<5; j++){
+    $shipImagesInBoxes[j].attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
   }
+  // for (let j=0; j<5; j++){
+  //   $('.ship-images img:nth-child('+(j+1)+')').attr('src','sea-warfare-set/'+shipImageBoxArray[j]+'-side.png');
+  // }
+};
+
+Game.AIOneHitDetection = function AIOneHitDetection() {
+  for (let i=0; i<Game.shipObjects[0].length; i++){
+    if (Game.shipObjects[0][i].hitLocation.length === 1){
+      return Game.shipObjects[0][i].hitLocation[0];
+    }
+  }
+  return false;
+};
+
+Game.AINextMoveAfter1Hit = function AINextMoveAfter1Hit (){
+  const oneHitDetectorResult = Game.AIOneHitDetection();
+  const possibleNextShotLocation = [];
+  if (oneHitDetectorResult !== false){
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult+1) && (oneHitDetectorResult+1)%10!==0){
+      possibleNextShotLocation.push(oneHitDetectorResult + 1);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1 && (oneHitDetectorResult-1)%10!==9)){
+      possibleNextShotLocation.push(oneHitDetectorResult - 1);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult + Game.gridWidth) && (oneHitDetectorResult+10)<Game.gridWidth*Game.gridWidth){
+      possibleNextShotLocation.push(oneHitDetectorResult + 10);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult - Game.gridWidth) && (oneHitDetectorResult-10)>-1) {
+      possibleNextShotLocation.push(oneHitDetectorResult - 10);
+    }
+  } else {
+    return false;
+  }
+  const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
+  return possibleNextShotLocation[arrayIndex];
+};
+
+Game.AITwoHitsDetection = function AITwoHitsDetection() {
+  for (let i=0; i<Game.shipObjects[0].length; i++){
+    if (Game.shipObjects[0][i].hitLocation.length > 1 && Game.shipObjects[0][i].hitLocation.length < Game.shipObjects[0][i].size){
+      return Game.shipObjects[0][i].hitLocation;
+    }
+  }
+  return false;
+};
+
+Game.twoHitsDirection = function twoHitsDirection(hitLocationArray) {
+  if (hitLocationArray === false) return false;
+  const difference = hitLocationArray[0] - hitLocationArray[1];
+  if (difference >= 10 || difference <= -10){
+    // Then the computer will hunt vertically
+    return 'vertical';
+  } else {
+    return 'horizontal';
+  }
+};
+
+Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
+  const twoHitsDetectorResult = Game.AITwoHitsDetection();
+  const possibleNextShotLocation = [];
+  let directionToHunt;
+
+  console.log('twoHitsDetectorResult:', twoHitsDetectorResult);
+  if (twoHitsDetectorResult!==false){
+    directionToHunt = Game.twoHitsDirection(twoHitsDetectorResult);
+  } else return false;
+  console.log('directionToHunt:', directionToHunt);
+
+  if (directionToHunt === 'vertical' ){
+    for (let i=0; i<twoHitsDetectorResult.length;i++){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+10) && (twoHitsDetectorResult[i]+10) < 100){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] + 10);
+        console.log('Entered the if statement at location 1');
+      }
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-10) && (twoHitsDetectorResult[i]-10) > -1){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] - 10);
+        console.log('Entered the if statement at location 2');
+      }
+    }
+  } else if (directionToHunt === 'horizontal') {
+    for (let i=0; i<twoHitsDetectorResult.length;i++){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+1) && (twoHitsDetectorResult+1)%10 !== 0){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] + 1);
+        console.log('Entered the if statement at location 3');
+      }
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult-1)%10 !== 9){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] - 1);
+        console.log('Entered the if statement at location 4');
+      }
+    }
+  } else {
+    return false;
+  }
+  if (possibleNextShotLocation.length===0) return false;
+  console.log('possibleNextShotLocation.length:', possibleNextShotLocation.length);
+  const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
+  console.log('arrayIndex:', arrayIndex);
+  return possibleNextShotLocation[arrayIndex];
 };
 
 Game.setup = function setup() {
