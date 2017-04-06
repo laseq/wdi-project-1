@@ -9,7 +9,7 @@ In this version of Battleship, you'll play against the computer and your ships w
 
 You can access the game at [https://protected-waters-78340.herokuapp.com](https://protected-waters-78340.herokuapp.com).
 
-![Imgur](http://i.imgur.com/vQM1EZa.png)
+<img width="1258" alt="screen shot 2017-04-06 at 13 28 04" src="https://cloud.githubusercontent.com/assets/15388548/24772208/4ed3ffb8-1b08-11e7-8459-7c32d0bb2cbe.png">
 
 ### How to play
 
@@ -22,6 +22,7 @@ The winner is the first player to destroy their enemy's fleet.
 ### Coding experience
 
 The game's code can be split into 3 sections:
+
 1. Placing the ships on the grids
 2. The battle system
 3. The AI

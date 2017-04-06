@@ -253,7 +253,9 @@ Game.computerTurn = function computerTurn(){
   if (Game.gameOver) return;
   let compGuess, guessingUsedSquares;
   const oneHitNextMove = Game.AINextMoveAfter1Hit();
+  console.log('oneHitNextMove:',oneHitNextMove);
   const twoHitsNextMove = Game.AINextMoveAfter2Hits();
+  console.log('twoHitsNextMove:',twoHitsNextMove);
   if (oneHitNextMove!==false && Game.computerGuesses.all.includes(oneHitNextMove) === false){
     compGuess = oneHitNextMove;
     console.log('Entered comp using AI after one hit', 'compGuess:', compGuess);
@@ -381,7 +383,7 @@ Game.victorySound = function victoryMusic(){
       $(Game.$resultSound)[0].src = 'sounds/win.wav';
       $(Game.$resultSound).prop('volume', 0.3);
       Game.$resultSound.play();
-    }, Game.soundDelay+5000);
+    }, Game.soundDelay+6000);
   }
 };
 
@@ -449,7 +451,7 @@ Game.AINextMoveAfter1Hit = function AINextMoveAfter1Hit (){
       possibleNextShotLocation.push(oneHitDetectorResult + 1);
       console.log('oneHitDetectorResult + 1', oneHitDetectorResult + 1);
     }
-    if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1 && (oneHitDetectorResult-1)%10!==9)){
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1) && (oneHitDetectorResult-1)%10!==9){
       possibleNextShotLocation.push(oneHitDetectorResult - 1);
       console.log('oneHitDetectorResult - 1', oneHitDetectorResult - 1);
     }
@@ -481,7 +483,7 @@ Game.AITwoHitsDetection = function AITwoHitsDetection() {
 Game.twoHitsDirection = function twoHitsDirection(hitLocationArray) {
   if (hitLocationArray === false) return false;
   const difference = hitLocationArray[0] - hitLocationArray[1];
-  return (difference>=10 || difference <=-1) ? 'vertical':'horizontal';
+  return (difference>=10 || difference <=-10) ? 'vertical':'horizontal';
 };
 
 Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
