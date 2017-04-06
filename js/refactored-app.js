@@ -449,25 +449,20 @@ Game.AINextMoveAfter1Hit = function AINextMoveAfter1Hit (){
   if (oneHitDetectorResult !== false){
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult+1) && (oneHitDetectorResult+1)%10!==0){
       possibleNextShotLocation.push(oneHitDetectorResult + 1);
-      console.log('oneHitDetectorResult + 1', oneHitDetectorResult + 1);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1) && (oneHitDetectorResult-1)%10!==9){
       possibleNextShotLocation.push(oneHitDetectorResult - 1);
-      console.log('oneHitDetectorResult - 1', oneHitDetectorResult - 1);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult + Game.gridWidth) && (oneHitDetectorResult+10)<Game.gridWidth*Game.gridWidth){
       possibleNextShotLocation.push(oneHitDetectorResult + 10);
-      console.log('oneHitDetectorResult + 10', oneHitDetectorResult + 10);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult - Game.gridWidth) && (oneHitDetectorResult-10)>-1) {
       possibleNextShotLocation.push(oneHitDetectorResult - 10);
-      console.log('oneHitDetectorResult - 10', oneHitDetectorResult - 10);
     }
   } else {
     return false;
   }
   const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
-  console.log('possibleNextShotLocation[arrayIndex]:', possibleNextShotLocation[arrayIndex]);
   return possibleNextShotLocation[arrayIndex];
 };
 
@@ -506,11 +501,12 @@ Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
     }
   } else if (directionToHunt === 'horizontal') {
     for (let i=0; i<twoHitsDetectorResult.length;i++){
-      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+1) && (twoHitsDetectorResult+1)%10 !== 0){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+1) && (twoHitsDetectorResult[i]+1)%10 !== 0){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] + 1);
       }
-      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult-1)%10 !== 9){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult[i]-1)%10 !== 9){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] - 1);
+        debugger
       }
     }
   } else {

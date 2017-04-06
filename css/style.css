@@ -3,10 +3,13 @@
 }
 
 body {
-  background-color: #14568C;
+  /*background-color: #14568C;*/
   /*background-color: #292F36;*/
   margin: 0 auto;
   font-family: 'Orbitron', sans-serif;
+  background: #1A2980;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #1A2980, #26D0CE);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #1A2980, #26D0CE); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 header {
