@@ -314,8 +314,10 @@ Game.checkHits = function checkHits(attackerGuessObject,fleetToHit,squareId,theS
           Game.sinkProcedure('computer',fleetToHit[i].unit,'#player-');
         }
         if (attackerGuessObject.hits.length === Game.hitsToWin){
+          Game.explosionSound();
           if (attackerGuessObject.player === 'human'){
             $('.info-bar').text(Game.messages.playerDefeatsComputer);
+            Game.victorySound();
           } else {
             $('.info-bar').text(Game.messages.computerDefeatsPlayer);
           }
@@ -338,6 +340,7 @@ Game.setUpAudio = function setUpAudio(){
   Game.$backgroundMusic = $('.background-music')[0];
   Game.$bgmBtn = $('.bgm-btn')[0];
   Game.$sfxBtn =  $('.sfx-btn')[0];
+  Game.$resultSound = $('.result-sound')[0];
 
   $(Game.$backgroundMusic).prop('volume', 0.3);
   Game.$backgroundMusic.play();
@@ -368,6 +371,24 @@ Game.sinkSound = function sinkSound(){
   if (!Game.sfxMuted){
     setTimeout(function(){
       Game.playGameSound('water-hit.wav',1);
+    },Game.soundDelay);
+  }
+};
+
+Game.victorySound = function victoryMusic(){
+  if (!Game.sfxMuted){
+    setTimeout(function(){
+      $(Game.$resultSound)[0].src = 'sounds/win.wav';
+      $(Game.$resultSound).prop('volume', 0.3);
+      Game.$resultSound.play();
+    }, Game.soundDelay+4500);
+  }
+};
+
+Game.explosionSound = function explosionSound(){
+  if (!Game.sfxMuted){
+    setTimeout(function(){
+      Game.playGameSound('explosion.mp3',0);
     },Game.soundDelay);
   }
 };
@@ -426,20 +447,25 @@ Game.AINextMoveAfter1Hit = function AINextMoveAfter1Hit (){
   if (oneHitDetectorResult !== false){
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult+1) && (oneHitDetectorResult+1)%10!==0){
       possibleNextShotLocation.push(oneHitDetectorResult + 1);
+      console.log('oneHitDetectorResult + 1', oneHitDetectorResult + 1);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1 && (oneHitDetectorResult-1)%10!==9)){
       possibleNextShotLocation.push(oneHitDetectorResult - 1);
+      console.log('oneHitDetectorResult - 1', oneHitDetectorResult - 1);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult + Game.gridWidth) && (oneHitDetectorResult+10)<Game.gridWidth*Game.gridWidth){
       possibleNextShotLocation.push(oneHitDetectorResult + 10);
+      console.log('oneHitDetectorResult + 10', oneHitDetectorResult + 10);
     }
     if (!Game.computerGuesses.all.includes(oneHitDetectorResult - Game.gridWidth) && (oneHitDetectorResult-10)>-1) {
       possibleNextShotLocation.push(oneHitDetectorResult - 10);
+      console.log('oneHitDetectorResult - 10', oneHitDetectorResult - 10);
     }
   } else {
     return false;
   }
   const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
+  console.log('possibleNextShotLocation[arrayIndex]:', possibleNextShotLocation[arrayIndex]);
   return possibleNextShotLocation[arrayIndex];
 };
 
@@ -455,12 +481,7 @@ Game.AITwoHitsDetection = function AITwoHitsDetection() {
 Game.twoHitsDirection = function twoHitsDirection(hitLocationArray) {
   if (hitLocationArray === false) return false;
   const difference = hitLocationArray[0] - hitLocationArray[1];
-  if (difference >= 10 || difference <= -10){
-    // Then the computer will hunt vertically
-    return 'vertical';
-  } else {
-    return 'horizontal';
-  }
+  return (difference>=10 || difference <=-1) ? 'vertical':'horizontal';
 };
 
 Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
@@ -468,41 +489,33 @@ Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
   const possibleNextShotLocation = [];
   let directionToHunt;
 
-  console.log('twoHitsDetectorResult:', twoHitsDetectorResult);
   if (twoHitsDetectorResult!==false){
     directionToHunt = Game.twoHitsDirection(twoHitsDetectorResult);
   } else return false;
-  console.log('directionToHunt:', directionToHunt);
 
   if (directionToHunt === 'vertical' ){
     for (let i=0; i<twoHitsDetectorResult.length;i++){
       if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+10) && (twoHitsDetectorResult[i]+10) < 100){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] + 10);
-        console.log('Entered the if statement at location 1');
       }
       if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-10) && (twoHitsDetectorResult[i]-10) > -1){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] - 10);
-        console.log('Entered the if statement at location 2');
       }
     }
   } else if (directionToHunt === 'horizontal') {
     for (let i=0; i<twoHitsDetectorResult.length;i++){
       if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+1) && (twoHitsDetectorResult+1)%10 !== 0){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] + 1);
-        console.log('Entered the if statement at location 3');
       }
       if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult-1)%10 !== 9){
         possibleNextShotLocation.push(twoHitsDetectorResult[i] - 1);
-        console.log('Entered the if statement at location 4');
       }
     }
   } else {
     return false;
   }
   if (possibleNextShotLocation.length===0) return false;
-  console.log('possibleNextShotLocation.length:', possibleNextShotLocation.length);
   const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
-  console.log('arrayIndex:', arrayIndex);
   return possibleNextShotLocation[arrayIndex];
 };
 
