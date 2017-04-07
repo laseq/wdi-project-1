@@ -82,11 +82,11 @@ Game.createShips = function createShips(){
 };
 
 Game.calculateProposedLocations = function calculateProposedLocations(randomSpot,proposedLocations,alignment,p,i){
-  proposedLocations.push(Game.computeAlignment(randomSpot,Game.shipObjects[p][i].size,alignment));
+  proposedLocations.push(Game.computePlacement(randomSpot,Game.shipObjects[p][i].size,alignment));
   if (Game.doShipsOverlap(proposedLocations,i,Game.shipObjects[p])) proposedLocations.pop();
 };
 
-Game.computeAlignment = function computeAlignment(origin,size,alignment){
+Game.computePlacement = function computePlacement(origin,size,alignment){
   const array = [];
   for (let i=0; i<size; i++){
     if (alignment === 'North')array.push(origin-i*Game.gridWidth);
