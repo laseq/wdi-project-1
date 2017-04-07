@@ -375,7 +375,7 @@ Game.victorySound = function victoryMusic(){
   if (!Game.sfxMuted){
     setTimeout(function(){
       $(Game.$resultSound)[0].src = 'sounds/win.wav';
-      $(Game.$resultSound).prop('volume', 0.3);
+      $(Game.$resultSound).prop('volume', 0.5);
       Game.$resultSound.play();
     }, Game.soundDelay+6000);
   }
