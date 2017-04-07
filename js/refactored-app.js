@@ -213,7 +213,6 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
       if (Game.shipObjects[p][i].size <= (randomSpot%Game.gridWidth) +1){
         Game.calculateProposedLocations(randomSpot,proposedLocations,'West',p,i);
       }
-
       // If there are proposed locations for the ship, set the ship's location and draw it on the grid
       if (proposedLocations.length > 0){
         Game.shipObjects[p][i].location = Game.setShipOrientation(proposedLocations);
@@ -241,7 +240,6 @@ Game.fireShot = function fireShot(){
   Game.playerGuesses.all.push(squareId);
   Game.$trackingSquareList.off('click', fireShot); // Turn player clicking off because it's the computer's turn
   Game.checkHits(Game.playerGuesses,Game.shipObjects[1],squareId,this); // Cycle through enemy ships to see if you've made a hit
-
   // Making sure that if there's a hit, there's enough time to hear the sound if the sound effects are on
   if (Game.playerGuesses.all[Game.playerGuesses.all.length-1] === Game.playerGuesses.hits[Game.playerGuesses.hits.length-1] && !Game.sfxMuted){
     setTimeout(Game.computerTurn, Game.compMoveTimeDelay+750);
