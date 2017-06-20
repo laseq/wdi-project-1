@@ -29,6 +29,8 @@ The game's code can be split into 3 sections:
 
 Placing the ships on the grid was a challenge because they needed to be placed completely within the grid while not overlapping any other ships. The positions of the ship sprite images on the grid were absolutely positioned and rotated into place.
 
+The code below shows the logic for finding spots to place the ships in on the grid.
+
 ```
 Game.placeShipsOnGrid = function placeShipsOnGrid(){
   // Cycle through the player's and the computer's ships
@@ -75,6 +77,40 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
     } // End of for loop that cycles through ships
   } // End of for loop the cycles through the two players
 }; // End of function placeShipsOnGrid
+```
+The code below places the ship images on the player's grid. It uses other functions such as `calcShipImgOrientation`, `calcShipImgCoords `, `calcShipImgRotation` and `calcImgTranslation` that are not displayed here for brevity. The ship image positions are calculated and the ship images rotated into place to fit on the grid.
+
+```
+// Put the ship images on the player's grid
+Game.shipImageOnGrid = function shipImageOnGrid(shipLocation,unit,size){
+  const imgWidth = Game.squareWidth+'px';
+  const imgHeight = (Game.squareWidth*size)+'px';
+  const shipDirection = Game.calcShipImgOrientation(shipLocation);
+  let shipImgCoords = Game.calcShipImgCoords(shipLocation,shipDirection);
+  const shipImgRotation = Game.calcShipImgRotation(shipDirection);
+  const shipImgString = 'sea-warfare-set/'+unit+'-hull.png';
+
+  for (let i = 0; i < shipLocation.length; i++) {
+    $(Game.$mySquareList[shipLocation[i]]).removeClass('water').addClass('my-ships');
+  }
+
+  // Translation(moving the image) is required after rotation because it would be in the wrong spot otherwise
+  shipImgCoords = Game.calcImgTranslation(shipDirection,imgHeight,shipImgCoords);
+  const shipImgX = shipImgCoords[0]+'px';
+  const shipImgY = shipImgCoords[1]+'px';
+
+  $('.my-grid').append('<img src="'+ shipImgString +'" height="'+ imgHeight +'" width="'+ imgWidth +'">');
+  // The img:last-child element is being used because we don't want to select the img elements that were created previously
+  const $shipImg = $('.my-grid img:last-child');
+  $shipImg.addClass(unit);
+  $($shipImg).css({
+    position: 'absolute', top: shipImgY, left: shipImgX,
+    transform: 'rotate('+shipImgRotation+')',
+    '-ms-transform': 'rotate('+shipImgRotation+')', /* IE 9 */
+    '-moz-transform': 'rotate('+shipImgRotation+')', /* Firefox */
+    '-webkit-transform': 'rotate('+shipImgRotation+')' /* Safari and Chrome */
+  });
+};
 ```
 
 The AI system works by making the computer fire a shot on random squares until it hits a ship. When one spot is hit, the AI looks at the available spots to hit  and hits one of them. If it misses, it tries one of the next available spots. If it hits the ship a second time, the AI will select spots to hit in a line to bombard the rest of the ship.
