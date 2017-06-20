@@ -221,7 +221,7 @@ Game.placeShipsOnGrid = function placeShipsOnGrid(){
           Game.shipImageOnGrid(Game.shipObjects[p][i].location,Game.shipObjects[p][i].unit,Game.shipObjects[p][i].size);
         }
       } else {
-        i--; // Since no locations are available, go through the loop again by decrementing i
+        i--; // Since no feasible locations are available, go through the loop again by decrementing i
       }
     } // End of for loop that cycles through ships
   } // End of for loop the cycles through the two players

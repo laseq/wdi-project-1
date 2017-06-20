@@ -29,13 +29,135 @@ The game's code can be split into 3 sections:
 
 Placing the ships on the grid was a challenge because they needed to be placed completely within the grid while not overlapping any other ships. The positions of the ship sprite images on the grid were absolutely positioned and rotated into place.
 
+```
+Game.placeShipsOnGrid = function placeShipsOnGrid(){
+  // Cycle through the player's and the computer's ships
+  for (let p=0; p<Game.shipObjects.length;p++){
+  
+    // We're cycling through each ship from carrier to destroyer here
+    for (let i=0; i<Game.shipObjects[p].length; i++){
+    
+      // Select a random proposed spot to start placing a ship
+      const randomSpot = Math.floor(Math.random()*Math.pow(Game.gridWidth,2));
+      const proposedLocations = [];
+
+      // Check to see which orientations are feasible. The following if statements can be read as:
+      // If this ship's size is less than or equal to the max size allowed in that orientation...
+      
+      // Check if ship can be oriented upwards
+      if (Game.shipObjects[p][i].size <= Math.floor((randomSpot/Game.gridWidth)+1)){
+        Game.calculateProposedLocations(randomSpot,proposedLocations,'North',p,i);
+      }
+      // Check if ship can be oriented rightwards
+      if (Game.shipObjects[p][i].size <= Game.gridWidth-(randomSpot%Game.gridWidth)){
+        Game.calculateProposedLocations(randomSpot,proposedLocations,'East',p,i);
+      }
+      // Check if ship can be oriented downwards
+      if (Game.shipObjects[p][i].size <= Game.gridWidth-Math.floor(randomSpot/Game.gridWidth)){
+        Game.calculateProposedLocations(randomSpot,proposedLocations,'South',p,i);
+      }
+      // Check if ship can be oriented leftwards
+      if (Game.shipObjects[p][i].size <= (randomSpot%Game.gridWidth) +1){
+        Game.calculateProposedLocations(randomSpot,proposedLocations,'West',p,i);
+      }
+      
+      // If there are proposed locations for the ship, set the ship's location and draw it on the grid
+      if (proposedLocations.length > 0){
+        Game.shipObjects[p][i].location = Game.setShipOrientation(proposedLocations);
+        
+        // We only draw the ships for the human player and not the computer
+        if (p===0){
+          Game.shipImageOnGrid(Game.shipObjects[p][i].location,Game.shipObjects[p][i].unit,Game.shipObjects[p][i].size);
+        }
+      } else {
+        i--; // Since no feasible locations are available, go through the loop again by decrementing i
+      }
+    } // End of for loop that cycles through ships
+  } // End of for loop the cycles through the two players
+}; // End of function placeShipsOnGrid
+```
+
 The AI system works by making the computer fire a shot on random squares until it hits a ship. When one spot is hit, the AI looks at the available spots to hit  and hits one of them. If it misses, it tries one of the next available spots. If it hits the ship a second time, the AI will select spots to hit in a line to bombard the rest of the ship.
+
+The code below shows what the computer does when it hits a ship that belongs to the player for the first time. The AI wants to put its next possible shots into an array called `possibleNextShotLocation`. It analyses whether the next possible shots can be east, west, north or south of the spot that the computer just bombed. The if statements for each orientation check to see if the computer has already hit that proposed bombing location before, and if the proposed bombing location is inside the grid. If the proposed location is valid, it gets added to the `possibleNextShotLocation` array and one of these valid locations gets chosen by random and gets returned at the end of the function to be used in the computer's next turn.
+
+```
+Game.AINextMoveAfter1Hit = function AINextMoveAfter1Hit (){
+  const oneHitDetectorResult = Game.AIOneHitDetection();
+  const possibleNextShotLocation = [];
+  if (oneHitDetectorResult !== false){
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult+1) && (oneHitDetectorResult+1)%10!==0){
+      possibleNextShotLocation.push(oneHitDetectorResult + 1);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult-1) && (oneHitDetectorResult-1)%10!==9){
+      possibleNextShotLocation.push(oneHitDetectorResult - 1);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult + Game.gridWidth) && (oneHitDetectorResult+10)<Game.gridWidth*Game.gridWidth){
+      possibleNextShotLocation.push(oneHitDetectorResult + 10);
+    }
+    if (!Game.computerGuesses.all.includes(oneHitDetectorResult - Game.gridWidth) && (oneHitDetectorResult-10)>-1) {
+      possibleNextShotLocation.push(oneHitDetectorResult - 10);
+    }
+  } else {
+    return false;
+  }
+  const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
+  return possibleNextShotLocation[arrayIndex];
+};
+```
+The AI works differently when the computer hits 2 spots on one of the player's ships. This is because the computer now has the advantage of looking for the player's ship in a straight line. The AI assesses whether it needs to hunt for the player's ship vertically or horizontally by looking at the difference between the two hit locations.
+
+```
+Game.twoHitsDirection = function twoHitsDirection(hitLocationArray) {
+  if (hitLocationArray === false) return false;
+  const difference = hitLocationArray[0] - hitLocationArray[1];
+  return (difference>=10 || difference <=-10) ? 'vertical':'horizontal';
+};
+```
+As the AI now knows which direction to hunt, it needs to find the next possible location to bomb by entering either the 'vertical' or 'horizontal' if statement. The AI then cycles through the spots on the ship that have been bombed, and assesses whether the proposed bombing location is valid by checking that the spot was not previously bombed and that the proposed bombing location is on the grid, and places it in the array `possibleNextShotLocation`. It then selects a location at random from this array to return at the end of the function to use in the computer's next turn.
+
+```
+Game.AINextMoveAfter2Hits = function AINextMoveAfter2Hits() {
+  const twoHitsDetectorResult = Game.AITwoHitsDetection();
+  const possibleNextShotLocation = [];
+  let directionToHunt;
+
+  if (twoHitsDetectorResult!==false){
+    directionToHunt = Game.twoHitsDirection(twoHitsDetectorResult);
+  } else return false;
+
+  if (directionToHunt === 'vertical' ){
+    for (let i=0; i<twoHitsDetectorResult.length;i++){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+10) && (twoHitsDetectorResult[i]+10) < 100){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] + 10);
+      }
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-10) && (twoHitsDetectorResult[i]-10) > -1){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] - 10);
+      }
+    }
+  } else if (directionToHunt === 'horizontal') {
+    for (let i=0; i<twoHitsDetectorResult.length;i++){
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]+1) && (twoHitsDetectorResult[i]+1)%10 !== 0){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] + 1);
+      }
+      if (!Game.computerGuesses.all.includes(twoHitsDetectorResult[i]-1) && (twoHitsDetectorResult[i]-1)%10 !== 9){
+        possibleNextShotLocation.push(twoHitsDetectorResult[i] - 1);
+      }
+    }
+  } else {
+    return false;
+  }
+  if (possibleNextShotLocation.length===0) return false;
+  const arrayIndex = Math.floor((Math.random()*(possibleNextShotLocation.length)));
+  return possibleNextShotLocation[arrayIndex];
+};
+```
 
 If I had more time to spend on the project, I would improve the AI to avoid bombing squares where the player's remaining ships would definitely not be in.
 
 
 
-### Building tools
+### Tools used in this project
 - HTML/CSS
 - Javascript/jQuery
 
@@ -44,3 +166,6 @@ If I had more time to spend on the project, I would improve the AI to avoid bomb
 - Ship image sprites - [Open Game Art](https://opengameart.org/content/sea-warfare-set-ships-and-more)
 - Naval battle sounds - [Open Game Art](https://opengameart.org/content/tiny-naval-battle-sounds-set)
 - Background music - _We Belong to the Sea - Part 2_ by _Sea of Åland_. Available at [Free Music Archive](http://freemusicarchive.org/music/Sea\_of_Aland/)
+
+### Game Link
+[https://protected-waters-78340.herokuapp.com](https://protected-waters-78340.herokuapp.com).
