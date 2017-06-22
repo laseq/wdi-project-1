@@ -21,11 +21,12 @@ The winner is the first player to destroy their enemy's fleet.
 
 ### Coding experience
 
-The game's code can be split into 3 sections:
+The game's code can be split into 4 sections:
 
-1. Placing the ships on the grids
-2. The battle system
-3. The AI
+1. Creating the grids
+2. Placing the ships on the grids
+3. The battle system
+4. The AI
 
 Placing the ships on the grid was a challenge because they needed to be placed completely within the grid while not overlapping any other ships. The positions of the ship sprite images on the grid were absolutely positioned and rotated into place.
 
